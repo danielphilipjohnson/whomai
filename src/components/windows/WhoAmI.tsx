@@ -1,12 +1,12 @@
-import { useTerminal } from "@/hooks/UseTerminal";
-import { useTerminalBehavior } from "@/hooks/useTerminalBehavior";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
-
 import { AnimatePresence } from "framer-motion";
-import {  useRef, useState } from "react";
+
+import { useTerminalEngine } from "@/hooks/UseTerminalEngine";
+import { useTerminalBehavior } from "@/hooks/useTerminalBehavior";
 
 
-export const WhoAmI = ({ onClose, showTerminal, onMinimize, onMaximize }: { 
+export const WhoAmI = ({ onClose, showTerminal, setShowTerminal, onMinimize, onMaximize }: { 
 	onClose: () => void, 
 	showTerminal: boolean, 
 	setShowTerminal: (show: boolean) => void,
@@ -23,9 +23,8 @@ export const WhoAmI = ({ onClose, showTerminal, onMinimize, onMaximize }: {
 		command,
 		setCommand,
 		history,
-		whoamiData,
 		handleCommand
-	} = useTerminal();
+	} = useTerminalEngine(() => setShowTerminal(false));
 	
 	useTerminalBehavior(showTerminal, inputRef, terminalContentRef);
 
@@ -98,62 +97,30 @@ export const WhoAmI = ({ onClose, showTerminal, onMinimize, onMaximize }: {
 								}}
 							></div>
 							{/* Command history */}
-							{history?.map((line: string, index: number) => (
-								<div key={`history-${index}`} className="mb-2">
-									{line}
-								</div>
-							))}
-
-							{/* WHOAMI Response Data Display */}
-							{whoamiData && (
-								<div className="mt-4 pl-3 border-l-2 border-lime-400">
-									<div className="text-pink-500 mb-4">
-										=== USER IDENTITY SCAN COMPLETE ===
-									</div>
-
-									<div className="mb-2 flex">
-										<div className="w-40 text-lime-400 mr-4">IP ADDRESS</div>
-										<div className="text-white">
-											{whoamiData.ipaddress}
+							{history.map((entry, index) => {
+								if (entry.type === 'block') {
+									return (
+										<div key={index} className="mb-2 flex">
+											<div className="w-40 text-lime-400 mr-4">{entry.label}</div>
+											<div className="text-white">{entry.content}</div>
 										</div>
-									</div>
+									);
+								}
 
-									<div className="mb-2 flex">
-										<div className="w-40 text-lime-400 mr-4">OPERATING SYSTEM</div>
-										<div className="text-white">
-											{whoamiData.os || 'Unknown'}
-										</div>
+								return (
+									<div
+										key={index}
+										className={`
+											mb-2
+											${entry.type === 'error' ? 'text-red-400' : ''}
+											${entry.type === 'command' ? 'text-lime-400' : ''}
+											${entry.type === 'info' ? 'text-cyan-400' : ''}
+											${entry.type === 'system' ? 'text-pink-400' : ''}
+										`}>
+										{entry.content}
 									</div>
-
-									<div className="mb-2 flex">
-										<div className="w-40 text-lime-400 mr-4">BROWSER</div>
-										<div className="text-white">
-											{whoamiData.browser_name || 'Unknown'} {whoamiData.browser_version || ''}
-										</div>
-									</div>
-
-									<div className="mb-2 flex">
-										<div className="w-40 text-lime-400 mr-4">LANGUAGE</div>
-										<div className="text-white">
-											{whoamiData.parsed_language || 'Unknown'}
-										</div>
-									</div>
-
-									<div className="mb-2 flex">
-										<div className="w-40 text-lime-400 mr-4">USER AGENT</div>
-										<div className="text-white text-xs">
-											{whoamiData.software || 'Unknown'}
-										</div>
-									</div>
-
-									<div className="mb-2 flex">
-										<div className="w-40 text-lime-400 mr-4">SYSTEM ACCESS</div>
-										<div className="text-white">
-											Request #{whoamiData.total_requests}
-										</div>
-									</div>
-								</div>
-							)}
+								);
+							})}
 
 							{/* Command input field */}
 							<form onSubmit={(e) => {
