@@ -162,7 +162,7 @@ const Kernel = ({
 			onDragStart={onBringToFront}
 			style={{ zIndex: windowState.zIndex, touchAction: 'none' }}
 			className="absolute"
-			enableUserSelectHack={false}
+			disableDragging={window.innerWidth < 768}
 
 		>
 			<div onMouseDown={onBringToFront} className="w-full h-full overflow-hidden">

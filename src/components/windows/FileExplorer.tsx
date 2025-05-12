@@ -132,6 +132,7 @@ const FileExplorer = ({
 			onDragStart={onBringToFront}
 			style={{ zIndex: windowState.zIndex }}
 			className="absolute"
+			disableDragging={window.innerWidth < 768}
 		>
 			<div onMouseDown={onBringToFront} className="w-full h-full">
 				<FileExplorerContent

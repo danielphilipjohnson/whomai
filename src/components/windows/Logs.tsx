@@ -121,6 +121,7 @@ const Logs = ({
 			onDragStart={onBringToFront}
 			style={{ zIndex: windowState.zIndex }}
 			className="absolute"
+			disableDragging={window.innerWidth < 768}
 		>
 			<div onMouseDown={onBringToFront} className="w-full h-full">
 				<LogsWindow onMinimize={onMinimize} onMaximize={onMaximize} onClose={onClose} />
