@@ -57,7 +57,7 @@ const DesktopBackground = () => {
         />
       </div>
 
-      <div className="absolute bottom-4 right-4 flex items-center gap-2 z-30">
+      <div className="absolute bottom-10 right-4 hidden md:flex items-center gap-2 z-30">
         <button
           onClick={handlePrevious}
           className="p-2 rounded-full bg-black/30 backdrop-blur-sm border border-gray-700 text-gray-400 hover:text-cyan-400 hover:border-cyan-500 transition-all duration-300"
