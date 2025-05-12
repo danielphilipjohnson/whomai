@@ -79,7 +79,6 @@ export const WhoAmI = ({ onClose, showTerminal, onMinimize, onMaximize }: {
 							ref={terminalContentRef}
 							className={`flex-1 pl-6 pt-3 md:p-3 font-mono text-cyan-400 overflow-y-auto relative ${isMaximized ? 'h-[calc(100vh-2rem)]' : 'h-96 max-h-96'}`}
 							onClick={() => inputRef.current?.focus()} 
-							onTouchStart={() => inputRef.current?.focus()}
 							tabIndex={0} 
 						>
 							{/* Scanlines effect */}
