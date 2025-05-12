@@ -2,14 +2,7 @@ import React from 'react';
 import { Rnd } from 'react-rnd';
 import WhoAmI from './WhoAmI';
 import { useWindowDimensions } from '../../hooks/useWindowDimensions';
-
-type WindowState = {
-  id: "logs" | "kernel" | "terminal" | "fileExplorer";
-  visible: boolean;
-  zIndex: number;
-  minimized: boolean;
-  maximized: boolean;
-};
+import { WindowState } from '@/types/window';
 
 interface TerminalWindowProps {
   windowState: WindowState;

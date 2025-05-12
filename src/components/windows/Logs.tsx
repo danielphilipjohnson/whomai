@@ -1,13 +1,6 @@
 import { Rnd } from 'react-rnd';
 import { useWindowDimensions } from '../../hooks/useWindowDimensions';
-
-type WindowState = {
-	id: "logs" | "kernel" | "terminal" | "fileExplorer";
-	visible: boolean;
-	zIndex: number;
-	minimized: boolean;
-	maximized: boolean;
-};
+import { WindowState } from '@/types/window';
 
 interface LogsProps {
 	windowState: WindowState;

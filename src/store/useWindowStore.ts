@@ -1,14 +1,5 @@
 import { create } from "zustand";
-
-type WindowType = "logs" | "kernel" | "terminal" | "fileExplorer";
-
-type WindowState = {
-	id: WindowType;
-	visible: boolean;
-	zIndex: number;
-	minimized: boolean;
-	maximized: boolean;
-};
+import { WindowState, WindowType } from "@/types/window";
 
 type Store = {
 	windows: Record<WindowType, WindowState>;
@@ -29,6 +20,7 @@ export const useWindowStore = create<Store>((set, get) => ({
 		logs: { id: "logs", visible: false, zIndex: 0, minimized: false, maximized: false },
 		kernel: { id: "kernel", visible: false, zIndex: 0, minimized: false, maximized: false },
 		fileExplorer: { id: "fileExplorer", visible: false, zIndex: 0, minimized: false, maximized: false },
+		notepad: { id: "notepad", visible: false, zIndex: 0, minimized: false, maximized: false },
 	},
 
 	openWindow: (id) => {

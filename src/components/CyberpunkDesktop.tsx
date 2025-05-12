@@ -5,6 +5,7 @@ import FileExplorer from './windows/FileExplorer';
 import Folder from './Folder';
 import { useWindowStore } from '@/store/useWindowStore';
 import TerminalWindow from './windows/TerminalWindow';
+import Notepad from './windows/Notepad';
 
 const CyberpunkDesktop = () => {
 	const { windows, openWindow, closeWindow, bringToFront, minimizeWindow, maximizeWindow } = useWindowStore();
@@ -21,6 +22,14 @@ const CyberpunkDesktop = () => {
 					onMinimize={() => minimizeWindow("fileExplorer")}
 					onMaximize={() => maximizeWindow("fileExplorer")}
 					onBringToFront={() => bringToFront("fileExplorer")}
+				/>
+
+				<Notepad
+					windowState={windows.notepad}
+					onClose={() => closeWindow("notepad")}
+					onMinimize={() => minimizeWindow("notepad")}
+					onMaximize={() => maximizeWindow("notepad")}
+					onBringToFront={() => bringToFront("notepad")}
 				/>
 	
 				<TerminalWindow

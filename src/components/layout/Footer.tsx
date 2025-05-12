@@ -4,6 +4,7 @@ import { useWindowStore } from "@/store/useWindowStore";
 import { TerminalIcon } from '../dock-bar/TerminalIcon';
 import { LogIcon } from '../dock-bar/LogIcon';
 import { KernelIcon } from '../dock-bar/KernelIcon';
+import NotepadIcon from "../dock-bar/NotepadIcon";
 
 const Footer = () => {
   const { windows, toggleWindow } = useWindowStore();
@@ -19,9 +20,13 @@ const Footer = () => {
           showLogs={windows.logs.visible} 
           toggleLogs={() => toggleWindow("logs")} 
         />
-        <KernelIcon 
-          showKernel={windows.kernel.visible} 
-          toggleKernel={() => toggleWindow("kernel")} 
+          <KernelIcon 
+            showKernel={windows.kernel.visible} 
+            toggleKernel={() => toggleWindow("kernel")} 
+        />
+        <NotepadIcon
+          showNotepad={windows.notepad.visible}
+          toggleNotepad={() => toggleWindow("notepad")}
         />
       </div>
     </div>

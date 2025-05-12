@@ -2,14 +2,7 @@ import { useEffect, useState } from "react";
 import { Rnd } from 'react-rnd';
 import { formatDistanceToNow } from 'date-fns';
 import { useWindowDimensions } from '../../hooks/useWindowDimensions';
-
-type WindowState = {
-	id: "logs" | "kernel" | "terminal" | "fileExplorer";
-	visible: boolean;
-	zIndex: number;
-	minimized: boolean;
-	maximized: boolean;
-};
+import { WindowState } from '@/types/window';
 
 interface KernelProps {
 	windowState: WindowState;
