@@ -71,12 +71,15 @@ const SystemInfo = ({ uptime }: SystemInfoProps) => (
 
 		{/* STACK CONFIG */}
 		<div className="bg-black/60 border border-green-400 rounded p-3 space-y-1">
-			<div className="text-lime-400">┌─ STACK CONFIG ────────┐</div>
-			<div>FRONTEND&nbsp;&nbsp;&nbsp; Nuxt 3 / Vue / Tailwind</div>
-			<div>BACKEND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Go / Node / Firebase</div>
-			<div>INFRA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Kubernetes / GCP / ELK</div>
-			<div>PAYMENT&nbsp;&nbsp;&nbsp;&nbsp; Stripe SDK v11.4</div>
+			<div className="text-lime-400">┌─ STACK CONFIG :: VOID-NET ─┐</div>
+			<div>FRONTEND&nbsp;&nbsp;&nbsp; HexUI / NeonJS / Tailwind 5</div>
+			<div>BACKEND&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; GhostNode / RustWarp / Firebase Quantum</div>
+			<div>INFRA&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; KubeVoid / Edgeflare / ELK v9</div>
+			<div>PAYMENT&nbsp;&nbsp;&nbsp;&nbsp; NanoStripe SDK vX.42</div>
+			<div>AUTH&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ZeroID Protocol / CipherSig v3</div>
+			<div>AI&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Oracle Core / LLM-9</div>
 		</div>
+
 
 		{/* RUNTIME METRICS */}
 		<div className="md:col-span-2 bg-black/60 border border-green-400 rounded p-3 space-y-1">
