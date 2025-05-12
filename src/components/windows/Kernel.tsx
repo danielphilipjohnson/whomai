@@ -26,7 +26,7 @@ interface KernelHeaderProps {
 }
 
 const KernelHeader = ({ onMinimize, onMaximize, onClose }: KernelHeaderProps) => (
-	<div className="fixed top-0 left-0 w-full flex justify-between items-center pb-2 bg-transparent py-2 px-2">
+	<div className="absolute top-0 left-0 w-full flex justify-between items-center pb-2 bg-transparent py-2 px-2">
 		<div className="text-lime-300 uppercase tracking-widest animate-pulse">
 			[ KERNEL DIAGNOSTIC PANEL ]
 		</div>
