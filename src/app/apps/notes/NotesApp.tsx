@@ -11,9 +11,10 @@ type ViewMode = 'edit' | 'preview' | 'split';
 interface NotesAppProps {
   id: string;
   title: string;
+  onNoteChange: () => void; // New prop
 }
 
-const NotesApp: React.FC<NotesAppProps> = ({ id, title }) => {
+const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
   const [currentNoteId, setCurrentNoteId] = useState<string>(id);
   const [note, setNote] = useState<Note | null>(null);
   const [editorContent, setEditorContent] = useState<string>('');
@@ -39,6 +40,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title }) => {
       if (note) {
         notesRepository.updateNote(note.id, updatedContent);
         setNote((prevNote) => prevNote ? { ...prevNote, content: updatedContent, updatedAt: Date.now() } : null);
+        onNoteChange(); // Notify parent of change
         console.log('Note autosaved!', note.id);
       }
     }, 1000), // Save after 1 second of inactivity
@@ -57,6 +59,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title }) => {
     if (note && editorContent) {
       notesRepository.updateNote(note.id, editorContent);
       setNote((prevNote) => prevNote ? { ...prevNote, content: editorContent, updatedAt: Date.now() } : null);
+      onNoteChange(); // Notify parent of change
       console.log('Note manually saved!', note.id);
     }
   }, [note, editorContent]);
@@ -77,6 +80,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title }) => {
   const handleCreateNewNoteShortcut = useCallback(() => {
     const newNote = notesRepository.createNote('Untitled Note');
     setCurrentNoteId(newNote.id);
+    onNoteChange(); // Notify parent of change
   }, []);
 
   useShortcut('n', true, handleCreateNewNoteShortcut);
@@ -120,6 +124,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title }) => {
 
   const handleEscape = useCallback(() => {
     setCurrentNoteId(''); // Deselect the current note
+    onNoteChange(); // Notify parent of change
   }, []);
 
   useShortcut('escape', false, handleEscape); // `false` for no meta key (Cmd/Ctrl)
@@ -131,12 +136,14 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title }) => {
   const handleCreateNewNote = useCallback(() => {
     const newNote = notesRepository.createNote('Untitled Note');
     setCurrentNoteId(newNote.id);
+    onNoteChange(); // Notify parent of change
   }, []);
 
   const handleTitleBlur = () => {
     if (note) {
       notesRepository.renameNote(note.id, note.title);
       setIsEditingTitle(false);
+      onNoteChange(); // Notify parent of change
     }
   };
 
@@ -146,11 +153,22 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title }) => {
     }
   };
 
+  const handleTogglePin = useCallback(() => {
+    if (note) {
+      const updatedNote = notesRepository.togglePin(note.id);
+      if (updatedNote) {
+        setNote(updatedNote);
+        onNoteChange(); // Notify parent of change
+      }
+    }
+  }, [note]);
+
   const handleToggleArchive = useCallback(() => {
     if (note) {
       const updatedNote = notesRepository.toggleArchive(note.id);
       if (updatedNote) {
         setNote(updatedNote);
+        onNoteChange(); // Notify parent of change
       }
     }
   }, [note]);
@@ -167,6 +185,23 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title }) => {
     }
   }, [note]);
 
+  const handleExportHtml = useCallback(async () => {
+    if (note) {
+      const processedContent = await remark()
+        .use(remarkHtml, { sanitize: true })
+        .use(rehypeHighlight)
+        .process(note.content);
+      const html = `<!DOCTYPE html>\n<html>\n<head>\n<title>${note.title}</title>\n<meta charset="utf-8">\n</head>\n<body>\n${processedContent.toString()}\n</body>\n</html>`;
+
+      const element = document.createElement("a");
+      const file = new Blob([html], { type: "text/html" });
+      element.href = URL.createObjectURL(file);
+      element.download = `${note.title}.html`;
+      document.body.appendChild(element); // Required for Firefox
+      element.click();
+      document.body.removeChild(element); // Clean up
+    }
+  }, [note]);
 
   if (!note) {
     return <div className="p-4 text-gray-400">Loading note...</div>;
@@ -179,6 +214,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title }) => {
         activeNoteId={currentNoteId}
         onCreateNewNote={handleCreateNewNote}
         focusSearchInput={shouldFocusSearch}
+        onNoteChange={onNoteChange} // Pass the callback to NotesSidebar
       />
       <div className="flex flex-col flex-1">
         <div className="flex justify-between items-center p-2 border-b border-gray-700">

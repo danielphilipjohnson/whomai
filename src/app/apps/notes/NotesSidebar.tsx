@@ -9,6 +9,7 @@ interface NotesSidebarProps {
   activeNoteId: string;
   onCreateNewNote: () => void;
   focusSearchInput: boolean;
+  onNoteChange: number; // Changed to number to trigger useEffect
 }
 
 const NotesSidebar: React.FC<NotesSidebarProps> = ({
@@ -16,6 +17,7 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
   activeNoteId,
   onCreateNewNote,
   focusSearchInput,
+  onNoteChange,
 }) => {
   const [allNotes, setAllNotes] = useState<Note[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -43,8 +45,8 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
 
   useEffect(() => {
     fetchNotes();
-    // Re-fetch notes whenever the filter changes
-  }, [filter]);
+    // Re-fetch notes whenever the filter changes or onNoteChange key updates
+  }, [filter, onNoteChange]); // Add onNoteChange to dependencies
 
   // Re-fetch notes when a note is updated (e.g., pinned, archived, renamed)
   // This is a simple way to ensure the sidebar is always up-to-date.
@@ -55,13 +57,7 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
     };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  useEffect(() => {
-    if (focusSearchInput && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [focusSearchInput]);
+  }, []); // No dependencies here, as fetchNotes is now dependent on onNoteChange
 
   const handleImportNote = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -72,6 +68,7 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
           const content = e.target?.result as string;
           const newNote = notesRepository.importNote(content);
           onSelectNote(newNote.id); // Select the newly imported note
+          // No need to call onNoteChange here, as the parent will handle it
           fetchNotes(); // Refresh the list
         } catch (error) {
           console.error("Error importing note:", error);
