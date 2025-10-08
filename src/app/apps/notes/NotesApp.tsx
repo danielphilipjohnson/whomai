@@ -3,9 +3,6 @@ import { notesRepository } from '@/lib/notesRepository';
 import { Note } from '@/lib/notes';
 import { useShortcut } from '@/hooks/useShortcut';
 import { debounce } from 'lodash';
-import { remark } from 'remark';
-import remarkHtml from 'remark-html';
-import rehypeHighlight from 'rehype-highlight';
 import MarkdownPreview from './MarkdownPreview';
 import NotesSidebar from './NotesSidebar';
 
@@ -149,15 +146,6 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title }) => {
     }
   };
 
-  const handleTogglePin = useCallback(() => {
-    if (note) {
-      const updatedNote = notesRepository.togglePin(note.id);
-      if (updatedNote) {
-        setNote(updatedNote);
-      }
-    }
-  }, [note]);
-
   const handleToggleArchive = useCallback(() => {
     if (note) {
       const updatedNote = notesRepository.toggleArchive(note.id);
@@ -179,23 +167,6 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title }) => {
     }
   }, [note]);
 
-  const handleExportHtml = useCallback(async () => {
-    if (note) {
-      const processedContent = await remark()
-        .use(remarkHtml, { sanitize: true })
-        .use(rehypeHighlight)
-        .process(note.content);
-      const html = `<!DOCTYPE html>\n<html>\n<head>\n<title>${note.title}</title>\n<meta charset="utf-8">\n</head>\n<body>\n${processedContent.toString()}\n</body>\n</html>`;
-
-      const element = document.createElement("a");
-      const file = new Blob([html], { type: "text/html" });
-      element.href = URL.createObjectURL(file);
-      element.download = `${note.title}.html`;
-      document.body.appendChild(element); // Required for Firefox
-      element.click();
-      document.body.removeChild(element); // Clean up
-    }
-  }, [note]);
 
   if (!note) {
     return <div className="p-4 text-gray-400">Loading note...</div>;
@@ -228,12 +199,6 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title }) => {
           )}
           <div className="flex space-x-2">
             <button
-              className="px-2 py-1 rounded-md text-sm bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200"
-              onClick={handleTogglePin}
-            >
-              {note.pinned ? 'Unpin' : 'Pin'}
-            </button>
-            <button
               className="px-2 py-1 rounded-md text-sm bg-red-700 text-white hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-neon-red focus:filter-neon-glow transition-colors duration-200"
               onClick={handleToggleArchive}
             >
@@ -244,12 +209,6 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title }) => {
               onClick={handleExportMarkdown}
             >
               Export MD
-            </button>
-            <button
-              className="px-2 py-1 rounded-md text-sm bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200"
-              onClick={handleExportHtml}
-            >
-              Export HTML
             </button>
             <button
               className={`px-3 py-1 rounded-md text-sm ${viewMode === 'edit' ? 'bg-neon-blue text-white filter-neon-glow' : 'bg-gray-700 text-gray-300'} focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow`}

@@ -24,7 +24,7 @@ const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content }) => {
 
   return (
     <div
-      className="prose prose-invert max-w-none p-2 overflow-auto"
+      className="prose prose-invert max-w-none p-2 overflow-auto text-gray-300 leading-relaxed"
       dangerouslySetInnerHTML={{ __html: htmlContent }}
     />
   );

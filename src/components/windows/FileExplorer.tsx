@@ -1,5 +1,3 @@
-import { useWindowDimensions } from '../../hooks/useWindowDimensions';
-
 interface FileListProps {
 	files: Array<{ name: string; action: string }>;
 }
