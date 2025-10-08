@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { TerminalSvg } from "@/lib/svgIcons";
 
 export const TerminalIcon = ({ showTerminal, toggleTerminal }: { showTerminal: boolean, toggleTerminal: () => void }) => {
 	return (
@@ -11,17 +12,7 @@ export const TerminalIcon = ({ showTerminal, toggleTerminal }: { showTerminal: b
 			)}
 			onClick={toggleTerminal}
 		>
-			<svg className="w-24 h-24" width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
-				<rect width="64" height="64" rx="8" fill="#0a0a0a" />
-
-				<path d="M18 24l6 4-6 4" stroke="#33FF99" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-				<line x1="30" y1="32" x2="44" y2="32" stroke="#33FFCC" strokeWidth="1.5" strokeLinecap="round" />
-
-				<rect x="6" y="6" width="52" height="52" rx="6" stroke="#00ffe0" strokeWidth="1.5" />
-				<g opacity="0.3">
-					<path d="M58 6v52M6 6v52" stroke="#00ffe0" strokeDasharray="2 2" />
-				</g>
-			</svg>
+			{TerminalSvg}
 
 
 			{showTerminal && (

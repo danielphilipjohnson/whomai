@@ -13,6 +13,8 @@ type WindowState = {
 type Store = {
 	windows: Record<WindowType, WindowState>;
 	topZ: number;
+	startMenuOpen: boolean;
+	toggleStartMenu: () => void;
 	openWindow: (id: WindowType) => void;
 	closeWindow: (id: WindowType) => void;
 	bringToFront: (id: WindowType) => void;
@@ -24,6 +26,8 @@ type Store = {
 
 export const useWindowStore = create<Store>((set, get) => ({
 	topZ: 100,
+	startMenuOpen: false,
+	toggleStartMenu: () => set((state) => ({ startMenuOpen: !state.startMenuOpen })),
 	windows: {
 		terminal: { id: "terminal", visible: false, zIndex: 0, minimized: false, maximized: false },
 		logs: { id: "logs", visible: false, zIndex: 0, minimized: false, maximized: false },

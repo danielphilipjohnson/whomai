@@ -5,13 +5,18 @@ import FileExplorer from './windows/FileExplorer';
 import Folder from './Folder';
 import { useWindowStore } from '@/store/useWindowStore';
 import TerminalWindow from './windows/TerminalWindow';
+import { StartMenu } from './StartMenu';
+import { useShortcut } from "@/hooks/useShortcut";
 
 const CyberpunkDesktop = () => {
-	const { windows, openWindow, closeWindow, bringToFront, minimizeWindow, maximizeWindow } = useWindowStore();
+	const { windows, openWindow, closeWindow, bringToFront, minimizeWindow, maximizeWindow, toggleStartMenu } = useWindowStore();
 	const kernelState = useWindowStore((state) => state.windows.kernel);
+
+	useShortcut(' ', true, toggleStartMenu);
 
 	return (
 		<>
+			<StartMenu />
 			<Folder onOpen={() => openWindow("fileExplorer")} />
 
 			<div className="flex-1 relative">
