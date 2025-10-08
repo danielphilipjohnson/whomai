@@ -10,7 +10,7 @@ interface NotesSidebarProps {
   activeNoteId: string;
   onCreateNewNote: () => void;
   focusSearchInput: boolean;
-  onNoteChange: number; // Changed to number to trigger useEffect
+  onNoteChange: number; // Counter to trigger useEffect
 }
 
 const NotesSidebar: React.FC<NotesSidebarProps> = ({
@@ -34,6 +34,8 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
     } else if (filter === 'archived') {
       notes = notesRepository.getArchivedNotes();
     }
+
+    console.log('NotesSidebar: Fetched notes:', notes);
 
     // Sort by pinned status (pinned first), then by updatedAt (newest first)
     notes.sort((a, b) => {

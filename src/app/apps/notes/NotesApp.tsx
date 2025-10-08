@@ -26,6 +26,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
   const [isEditingTitle, setIsEditingTitle] = useState<boolean>(false);
   const [shouldFocusSearch, setShouldFocusSearch] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true); // New state for sidebar visibility
+  const [noteChangeCounter, setNoteChangeCounter] = useState<number>(0);
 
   // Load note on initial mount or when currentNoteId changes
   useEffect(() => {
@@ -54,6 +55,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
         notesRepository.updateNote(note.id, updatedContent);
         setNote((prevNote) => prevNote ? { ...prevNote, content: updatedContent, updatedAt: Date.now() } : null);
         onNoteChange(); // Notify parent of change
+        setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
         console.log('Note autosaved!', note.id);
       }
     }, 1000), // Save after 1 second of inactivity
@@ -73,6 +75,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
       notesRepository.updateNote(note.id, editorContent);
       setNote((prevNote) => prevNote ? { ...prevNote, content: editorContent, updatedAt: Date.now() } : null);
       onNoteChange(); // Notify parent of change
+      setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
       console.log('Note manually saved!', note.id);
     }
   }, [note, editorContent]);
@@ -94,6 +97,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
     const newNote = notesRepository.createNote('Untitled Note');
     setCurrentNoteId(newNote.id);
     onNoteChange(); // Notify parent of change
+    setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
   }, []);
 
   useShortcut('n', true, handleCreateNewNoteShortcut);
@@ -138,6 +142,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
   const handleEscape = useCallback(() => {
     setCurrentNoteId(''); // Deselect the current note
     onNoteChange(); // Notify parent of change
+    setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
   }, []);
 
   useShortcut('escape', false, handleEscape); // `false` for no meta key (Cmd/Ctrl)
@@ -150,6 +155,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
     const newNote = notesRepository.createNote('Untitled Note');
     setCurrentNoteId(newNote.id);
     onNoteChange(); // Notify parent of change
+    setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
   }, []);
 
   const handleTitleBlur = () => {
@@ -157,6 +163,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
       notesRepository.renameNote(note.id, note.title);
       setIsEditingTitle(false);
       onNoteChange(); // Notify parent of change
+      setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
     }
   };
 
@@ -172,6 +179,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
       if (updatedNote) {
         setNote(updatedNote);
         onNoteChange(); // Notify parent of change
+        setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
       }
     }
   }, [note]);
@@ -182,6 +190,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
       if (updatedNote) {
         setNote(updatedNote);
         onNoteChange(); // Notify parent of change
+        setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
       }
     }
   }, [note]);
@@ -224,7 +233,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
           activeNoteId={currentNoteId}
           onCreateNewNote={handleCreateNewNote}
           focusSearchInput={shouldFocusSearch}
-          onNoteChange={onNoteChange}
+          onNoteChange={noteChangeCounter}
         />
         <div className="flex flex-col flex-1 items-center justify-center text-gray-400 text-xl">
           <p>Select a note from the sidebar or create a new one.</p>
@@ -237,11 +246,12 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
     <div className="flex h-full bg-gray-900 text-gray-50">
       {isSidebarOpen && (
         <NotesSidebar
+          key={noteChangeCounter} // Add key prop to force re-render
           onSelectNote={handleSelectNote}
           activeNoteId={currentNoteId}
           onCreateNewNote={handleCreateNewNote}
           focusSearchInput={shouldFocusSearch}
-          onNoteChange={onNoteChange}
+          onNoteChange={noteChangeCounter}
         />
       )}
       <div className="flex flex-col flex-1">

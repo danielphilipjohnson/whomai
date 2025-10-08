@@ -58,13 +58,15 @@ class NotesRepository {
   renameNote(id: string, newTitle: string): Note | undefined {
     const noteIndex = this.notes.findIndex((note) => note.id === id);
     if (noteIndex > -1) {
-      this.notes[noteIndex] = {
+      const updatedNote = {
         ...this.notes[noteIndex],
         title: newTitle,
         updatedAt: Date.now(),
       };
+      this.notes[noteIndex] = updatedNote;
       this.saveNotes();
-      return this.notes[noteIndex];
+      console.log('NotesRepository: Renamed note and saved:', updatedNote);
+      return updatedNote;
     }
     return undefined;
   }
@@ -72,13 +74,15 @@ class NotesRepository {
   togglePin(id: string): Note | undefined {
     const noteIndex = this.notes.findIndex((note) => note.id === id);
     if (noteIndex > -1) {
-      this.notes[noteIndex] = {
+      const updatedNote = {
         ...this.notes[noteIndex],
         pinned: !this.notes[noteIndex].pinned,
         updatedAt: Date.now(),
       };
+      this.notes[noteIndex] = updatedNote;
       this.saveNotes();
-      return this.notes[noteIndex];
+      console.log('NotesRepository: Toggled pin and saved:', updatedNote);
+      return updatedNote;
     }
     return undefined;
   }
@@ -86,13 +90,15 @@ class NotesRepository {
   toggleArchive(id: string): Note | undefined {
     const noteIndex = this.notes.findIndex((note) => note.id === id);
     if (noteIndex > -1) {
-      this.notes[noteIndex] = {
+      const updatedNote = {
         ...this.notes[noteIndex],
         archived: !this.notes[noteIndex].archived,
         updatedAt: Date.now(),
       };
+      this.notes[noteIndex] = updatedNote;
       this.saveNotes();
-      return this.notes[noteIndex];
+      console.log('NotesRepository: Toggled archive and saved:', updatedNote);
+      return updatedNote;
     }
     return undefined;
   }
@@ -101,6 +107,7 @@ class NotesRepository {
     const initialLength = this.notes.length;
     this.notes = this.notes.filter((note) => note.id !== id);
     this.saveNotes();
+    console.log('NotesRepository: Deleted note. Current notes:', this.notes);
     return this.notes.length < initialLength;
   }
 
@@ -118,6 +125,11 @@ class NotesRepository {
 
   getNoteById(id: string): Note | undefined {
     return this.notes.find((note) => note.id === id);
+  }
+
+  reloadNotes(): void {
+    this.notes = this.loadNotes();
+    console.log('NotesRepository: Reloaded notes from localStorage:', this.notes);
   }
 
   private generateTitleFromContent(content: string): string {

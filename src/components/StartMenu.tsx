@@ -1,6 +1,6 @@
 "use client";
 
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { useAppRegistry } from "@/hooks/useAppRegistry";
 import { useWindowStore } from "@/store/useWindowStore";
 import { useEffect, useRef, useState } from "react";
@@ -46,6 +46,7 @@ export function StartMenu() {
   return (
     <Dialog open={startMenuOpen} onOpenChange={toggleStartMenu}>
       <DialogContent onKeyDown={handleKeyDown}>
+        <DialogTitle className="sr-only">Start Menu</DialogTitle>
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.2 }}>
           <input
             type="text"
