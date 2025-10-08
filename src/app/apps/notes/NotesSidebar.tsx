@@ -141,14 +141,32 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
         {filteredNotes.map((note) => (
           <div
             key={note.id}
-            className={`p-3 cursor-pointer border-b border-gray-700 hover:bg-gray-700 ${note.id === activeNoteId ? 'bg-gray-700 text-neon-green filter-neon-glow' : 'text-gray-300'}`}
+            className={`relative p-3 flex justify-between items-center cursor-pointer border-b border-gray-700 hover:bg-gray-700 ${note.id === activeNoteId ? 'bg-gray-700 text-neon-green filter-neon-glow' : 'text-gray-300'}`}
             onClick={() => onSelectNote(note.id)}
-          >
+          > <div className="flex flex-col">
             <h3 className="font-bold text-sm truncate">{note.title || 'Untitled Note'} {note.pinned && '📌'}</h3>
             <p className="text-xs text-gray-400 truncate">
               {new Date(note.updatedAt).toLocaleString()}
             </p>
+            </div>
             {filter === 'archived' && (
+              <button
+                className="text-red-500 hover:text-red-400 text-xs ml-2 p-1 rounded-full hover:bg-gray-700 absolute"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent selecting the note when clicking delete
+                  if (confirm(`Are you sure you want to permanently delete "${note.title}"?`)) {
+                    notesRepository.deleteNote(note.id);
+                    fetchNotes(); // Refresh the list
+                    if (activeNoteId === note.id) {
+                      onSelectNote(''); // Deselect if the deleted note was active
+                    }
+                  }
+                }}
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
+            {filter === 'active' && (
               <button
                 className="text-red-500 hover:text-red-400 text-xs ml-2 p-1 rounded-full hover:bg-gray-700"
                 onClick={(e) => {
