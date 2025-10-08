@@ -10,6 +10,7 @@ import { StartMenu } from './StartMenu';
 import { useShortcut } from "@/hooks/useShortcut";
 import { useAppRegistry } from "@/hooks/useAppRegistry";
 import WindowFrame from "./windows/WindowFrame";
+import { useState } from "react";
 
 const CyberpunkDesktop = () => {
 	const { windows, openWindow, closeWindow, bringToFront, minimizeWindow, maximizeWindow, toggleStartMenu } = useWindowStore();
@@ -19,6 +20,12 @@ const CyberpunkDesktop = () => {
 	const logsAppMeta = getApp("logs");
 	const kernelAppMeta = getApp("kernel");
 	const fileExplorerAppMeta = getApp("explorer");
+
+	const [notesChangeKey, setNotesChangeKey] = useState(0);
+
+	const handleNotesChange = () => {
+		setNotesChangeKey(prev => prev + 1);
+	};
 
 	useShortcut(' ', true, toggleStartMenu);
 
@@ -79,6 +86,7 @@ const CyberpunkDesktop = () => {
 						<NotesApp
 							id={windows.notes.payload?.id || notesAppMeta.id}
 							title={windows.notes.payload?.title || notesAppMeta.name}
+							onNoteChange={handleNotesChange}
 						/>
 					</WindowFrame>
 				)}

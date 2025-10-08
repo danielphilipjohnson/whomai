@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { notesRepository } from '@/lib/notesRepository';
 import { Note } from '@/lib/notes';
+import { Trash2 } from 'lucide-react';
 
 type NoteFilter = 'all' | 'active' | 'archived';
 
@@ -136,7 +137,7 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
           </button>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pb-16">
         {filteredNotes.map((note) => (
           <div
             key={note.id}
@@ -147,6 +148,23 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
             <p className="text-xs text-gray-400 truncate">
               {new Date(note.updatedAt).toLocaleString()}
             </p>
+            {filter === 'archived' && (
+              <button
+                className="text-red-500 hover:text-red-400 text-xs ml-2 p-1 rounded-full hover:bg-gray-700"
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent selecting the note when clicking delete
+                  if (confirm(`Are you sure you want to permanently delete "${note.title}"?`)) {
+                    notesRepository.deleteNote(note.id);
+                    fetchNotes(); // Refresh the list
+                    if (activeNoteId === note.id) {
+                      onSelectNote(''); // Deselect if the deleted note was active
+                    }
+                  }
+                }}
+              >
+                <Trash2 size={16} />
+              </button>
+            )}
           </div>
         ))}
       </div>
