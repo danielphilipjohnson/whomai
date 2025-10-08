@@ -76,11 +76,12 @@ export const useAppRegistry = () => {
     const app = getApp(id);
     if (app) {
       // Map app IDs to window types
-      const windowTypeMap: Record<string, "logs" | "kernel" | "terminal" | "fileExplorer"> = {
+      const windowTypeMap: Record<string, "logs" | "kernel" | "terminal" | "fileExplorer" | "notes"> = {
         terminal: "terminal",
         logs: "logs", 
         kernel: "kernel",
-        explorer: "fileExplorer"
+        explorer: "fileExplorer",
+        notes: "notes"
       };
       
       const windowType = windowTypeMap[id];

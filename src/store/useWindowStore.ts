@@ -1,13 +1,19 @@
 import { create } from "zustand";
 
-type WindowType = "logs" | "kernel" | "terminal" | "fileExplorer";
+type WindowType = "logs" | "kernel" | "terminal" | "fileExplorer" | "notes";
 
-type WindowState = {
+export type NotesAppPayload = {
+	id: string;
+	title: string;
+}
+
+export type WindowState = {
 	id: WindowType;
 	visible: boolean;
 	zIndex: number;
 	minimized: boolean;
 	maximized: boolean;
+	payload?: NotesAppPayload;
 };
 
 type Store = {
@@ -15,7 +21,7 @@ type Store = {
 	topZ: number;
 	startMenuOpen: boolean;
 	toggleStartMenu: () => void;
-	openWindow: (id: WindowType) => void;
+	openWindow: (id: WindowType, payload?: NotesAppPayload) => void;
 	closeWindow: (id: WindowType) => void;
 	bringToFront: (id: WindowType) => void;
 	toggleWindow: (id: WindowType) => void;
@@ -33,9 +39,10 @@ export const useWindowStore = create<Store>((set, get) => ({
 		logs: { id: "logs", visible: false, zIndex: 0, minimized: false, maximized: false },
 		kernel: { id: "kernel", visible: false, zIndex: 0, minimized: false, maximized: false },
 		fileExplorer: { id: "fileExplorer", visible: false, zIndex: 0, minimized: false, maximized: false },
+		notes: { id: "notes", visible: false, zIndex: 0, minimized: false, maximized: false },
 	},
 
-	openWindow: (id) => {
+	openWindow: (id, payload) => {
 		const { topZ } = get();
 		set((state) => ({
 			windows: {
@@ -46,6 +53,7 @@ export const useWindowStore = create<Store>((set, get) => ({
 					minimized: false,
 					maximized: false,
 					zIndex: topZ + 1,
+					...(payload && { payload }),
 				},
 			},
 			topZ: topZ + 1,

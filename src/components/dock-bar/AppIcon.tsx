@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
 import { AppMeta } from "@/lib/appRegistry";
 import { useWindowStore } from "@/store/useWindowStore";
+import Image from 'next/image';
 
 export const AppIcon = ({ app, onClick }: { app: AppMeta; onClick: () => void }) => {
   const { windows } = useWindowStore();
@@ -17,7 +18,7 @@ export const AppIcon = ({ app, onClick }: { app: AppMeta; onClick: () => void })
       onClick={onClick}
     >
       {typeof app.icon === "string" ? (
-        <img src={app.icon} alt={app.name} className="w-24 h-24" />
+        <Image src={app.icon} alt={app.name} width={96} height={96} className="w-24 h-24" />
       ) : (
         app.icon
       )}

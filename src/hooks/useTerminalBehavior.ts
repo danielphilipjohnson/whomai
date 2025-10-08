@@ -9,11 +9,11 @@ export const useTerminalBehavior = (
 		if (showTerminal && inputRef.current) {
 			inputRef.current.focus();
 		}
-	}, [showTerminal]);
+	}, [showTerminal, inputRef]);
 
 	useEffect(() => {
 		if (scrollRef.current) {
 			scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
 		}
-	}, [scrollRef.current?.scrollHeight]);
+	}, [scrollRef.current?.scrollHeight, scrollRef]);
 };

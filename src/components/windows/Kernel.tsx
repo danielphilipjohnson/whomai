@@ -1,57 +1,5 @@
 import { useEffect, useState } from "react";
-import { Rnd } from 'react-rnd';
 import { formatDistanceToNow } from 'date-fns';
-import { useWindowDimensions } from '../../hooks/useWindowDimensions';
-
-type WindowState = {
-	id: "logs" | "kernel" | "terminal" | "fileExplorer";
-	visible: boolean;
-	zIndex: number;
-	minimized: boolean;
-	maximized: boolean;
-};
-
-interface KernelProps {
-	windowState: WindowState;
-	onClose: () => void;
-	onMinimize: () => void;
-	onMaximize: () => void;
-	onBringToFront: () => void;
-}
-
-interface KernelHeaderProps {
-	onMinimize: () => void;
-	onMaximize: () => void;
-	onClose: () => void;
-}
-
-const KernelHeader = ({ onMinimize, onMaximize, onClose }: KernelHeaderProps) => (
-	<div className="fixed top-0 left-0 w-full flex justify-between items-center pb-2 bg-transparent py-2 px-2">
-		<div className="text-lime-300 uppercase tracking-widest animate-pulse">
-			[ KERNEL DIAGNOSTIC PANEL ]
-		</div>
-		<div className="flex gap-2">
-			<button 
-				type="button"
-				className="w-3 h-3 rounded-full bg-yellow-400 cursor-pointer hover:bg-yellow-300 transition-colors"
-				onClick={onMinimize}
-				aria-label="Minimize kernel"
-			/>
-			<button 
-				type="button"
-				className="w-3 h-3 rounded-full bg-green-400 cursor-pointer hover:bg-green-300 transition-colors"
-				onClick={onMaximize}
-				aria-label="Maximize kernel"
-			/>
-			<button 
-				type="button"
-				className="w-3 h-3 rounded-full bg-pink-500 cursor-pointer hover:bg-pink-400 transition-colors" 
-				onClick={onClose}
-				aria-label="Close kernel"
-			/>
-		</div>
-	</div>
-);
 
 interface SystemInfoProps {
 	uptime: string;
@@ -93,34 +41,7 @@ const KernelPrompt = () => (
 	<div className="pt-2 text-pink-400 animate-blink">{'>'} _ SYSTEM NOMINAL</div>
 );
 
-interface KernelWindowProps {
-	onMinimize: () => void;
-	onMaximize: () => void;
-	onClose: () => void;
-	uptime: string;
-}
-
-const KernelWindow = ({ onMinimize, onMaximize, onClose, uptime }: KernelWindowProps) => (
-	<div className="bg-[#0a0a0a] border-2 border-lime-400 shadow-[0_0_20px_rgba(0,255,128,0.4)] font-mono text-lime-300 text-xs rounded-md h-full flex flex-col">
-		<div className="p-4 border-b border-lime-400">
-			<KernelHeader onMinimize={onMinimize} onMaximize={onMaximize} onClose={onClose} />
-		</div>
-
-		<div className="flex-1 overflow-auto p-5 md:p-2 space-y-5">
-			<SystemInfo uptime={uptime} />
-			<KernelPrompt />
-		</div>
-	</div>
-);
-
-const Kernel = ({ 
-	windowState,
-	onClose,
-	onMinimize,
-	onMaximize,
-	onBringToFront 
-}: KernelProps) => {
-	const dimensions = useWindowDimensions();
+const Kernel = () => {
 	const [uptime, setUptime] = useState("0 hours, 0 minutes");
 
 	useEffect(() => {
@@ -132,48 +53,13 @@ const Kernel = ({
 		return () => clearInterval(timer);
 	}, []);
 
-	if (!windowState.visible || windowState.minimized) {
-		return null;
-	}
-
-	if (windowState.maximized) {
-		return (
-			<div
-				style={{ zIndex: windowState.zIndex }}
-				className="absolute w-full h-full top-0 left-0"
-				onMouseDown={onBringToFront}
-			>
-				<KernelWindow 
-					onMinimize={onMinimize}
-					onMaximize={onMaximize}
-					onClose={onClose}
-					uptime={uptime}
-				/>
-			</div>
-		);
-	}
-
 	return (
-		<Rnd
-			default={dimensions}
-			minWidth={Math.min(window.innerWidth - 32, 300)}
-			minHeight={Math.min(window.innerHeight - 32, 200)}
-			bounds="parent"
-			onDragStart={onBringToFront}
-			style={{ zIndex: windowState.zIndex, touchAction: 'none' }}
-			className="absolute"
-			enableUserSelectHack={false}
-
-		>
-			<div onMouseDown={onBringToFront} className="w-full h-full overflow-hidden">
-				<KernelWindow 
-					onMinimize={onMinimize}
-					onMaximize={onMaximize}
-					onClose={onClose}
-					uptime={uptime}
-				/>
+		<div className="bg-[#0a0a0a] border-2 border-lime-400 shadow-[0_0_20px_rgba(0,255,128,0.4)] font-mono text-lime-300 text-xs rounded-md h-full flex flex-col">
+			<div className="flex-1 overflow-auto p-5 md:p-2 space-y-5">
+				<SystemInfo uptime={uptime} />
+				<KernelPrompt />
 			</div>
-		</Rnd>
+		</div>
 	);
 };
 

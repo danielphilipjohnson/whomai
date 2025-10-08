@@ -2,6 +2,7 @@ import React from 'react';
 import { AppMeta } from '@/lib/appRegistry';
 import { cn } from '@/lib/utils';
 import { usePinnedAppsStore } from '@/store/usePinnedAppsStore';
+import Image from 'next/image';
 
 interface StartMenuAppTileProps {
   app: AppMeta;
@@ -36,7 +37,7 @@ export const StartMenuAppTile: React.FC<StartMenuAppTileProps> = ({ app, onClick
       }}
     >
       {typeof app.icon === "string" ? (
-        <img src={app.icon} alt={app.name} className="w-10 h-10 mb-1" />
+        <Image src={app.icon} alt={app.name} width={40} height={40} className="w-10 h-10 mb-1" />
       ) : (
         <div className="w-10 h-10 mb-1 flex items-center justify-center">{app.icon}</div>
       )}
