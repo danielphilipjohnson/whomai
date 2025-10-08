@@ -18,13 +18,12 @@ interface NotesAppProps {
   onNoteChange: () => void; // New prop
 }
 
-const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
+const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
   const [currentNoteId, setCurrentNoteId] = useState<string>(id);
   const [note, setNote] = useState<Note | null>(null);
   const [editorContent, setEditorContent] = useState<string>('');
   const [viewMode, setViewMode] = useState<ViewMode>('split');
   const [isEditingTitle, setIsEditingTitle] = useState<boolean>(false);
-  const [shouldFocusSearch, setShouldFocusSearch] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true); // New state for sidebar visibility
   const [noteChangeCounter, setNoteChangeCounter] = useState<number>(0);
 
@@ -132,12 +131,8 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
   useShortcut('b', true, handleBoldShortcut);
   useShortcut('i', true, handleItalicShortcut);
 
-  const handleFocusSearch = useCallback(() => {
-    setShouldFocusSearch(true);
-    setTimeout(() => setShouldFocusSearch(false), 100);
-  }, []);
 
-  useShortcut('f', true, handleFocusSearch);
+
 
   const handleEscape = useCallback(() => {
     setCurrentNoteId(''); // Deselect the current note
@@ -232,7 +227,6 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
           onSelectNote={handleSelectNote}
           activeNoteId={currentNoteId}
           onCreateNewNote={handleCreateNewNote}
-          focusSearchInput={shouldFocusSearch}
           onNoteChange={noteChangeCounter}
         />
         <div className="flex flex-col flex-1 items-center justify-center text-gray-400 text-xl">
@@ -250,7 +244,6 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
           onSelectNote={handleSelectNote}
           activeNoteId={currentNoteId}
           onCreateNewNote={handleCreateNewNote}
-          focusSearchInput={shouldFocusSearch}
           onNoteChange={noteChangeCounter}
         />
       )}

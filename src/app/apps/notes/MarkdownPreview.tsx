@@ -7,7 +7,7 @@ interface MarkdownPreviewProps {
   content: string;
 }
 
-const MarkdownPreview: React.FC<MarkdownPreviewProps> = ({ content }) => {
+const MarkdownPreview = ({ content }: MarkdownPreviewProps) => {
   const [htmlContent, setHtmlContent] = useState<string>('');
 
   useEffect(() => {

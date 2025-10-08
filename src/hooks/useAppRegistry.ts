@@ -1,7 +1,7 @@
 "use client";
 
 import { AppMeta } from "@/lib/appRegistry";
-import { useWindowStore } from "@/store/useWindowStore";
+import { NotesAppPayload, useWindowStore } from "@/store/useWindowStore";
 import { useRecentAppsStore } from "@/store/useRecentAppsStore";
 import Fuse from "fuse.js";
 import { useCallback, useState } from "react";
@@ -72,7 +72,7 @@ export const useAppRegistry = () => {
     return fuse.search(query);
   }, [apps]);
 
-  const launchApp = (id: string, payload?: Record<string, any>, shouldToggleStartMenu: boolean = true) => {
+  const launchApp = (id: string, payload?: Record<string, unknown>, shouldToggleStartMenu: boolean = true) => {
     const app = getApp(id);
     if (app) {
       // Map app IDs to window types
@@ -86,7 +86,7 @@ export const useAppRegistry = () => {
       
       const windowType = windowTypeMap[id];
       if (windowType) {
-        openWindow(windowType, payload);
+        openWindow(windowType, payload as NotesAppPayload);
         addRecentApp(id);
         if (shouldToggleStartMenu) {
           toggleStartMenu();

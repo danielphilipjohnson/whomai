@@ -9,7 +9,6 @@ interface NotesSidebarProps {
   onSelectNote: (id: string) => void;
   activeNoteId: string;
   onCreateNewNote: () => void;
-  focusSearchInput: boolean;
   onNoteChange: number; // Counter to trigger useEffect
 }
 
@@ -17,7 +16,6 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
   onSelectNote,
   activeNoteId,
   onCreateNewNote,
-  focusSearchInput,
   onNoteChange,
 }) => {
   const [allNotes, setAllNotes] = useState<Note[]>([]);
