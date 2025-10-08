@@ -48,7 +48,7 @@ const Folder = ({ onOpen }: FolderProps) => {
 			role="button"
 			tabIndex={0}
 			style={{ 
-				zIndex: isDragging ? 10 : 1000,
+				zIndex: isDragging ? 5 : 100,
 				pointerEvents: 'auto'
 			}}
 			aria-label="Open file explorer"

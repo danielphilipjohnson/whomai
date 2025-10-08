@@ -72,7 +72,7 @@ export const useAppRegistry = () => {
     return fuse.search(query);
   }, [apps]);
 
-  const launchApp = (id: string) => {
+  const launchApp = (id: string, payload?: Record<string, any>, shouldToggleStartMenu: boolean = true) => {
     const app = getApp(id);
     if (app) {
       // Map app IDs to window types
@@ -86,9 +86,11 @@ export const useAppRegistry = () => {
       
       const windowType = windowTypeMap[id];
       if (windowType) {
-        openWindow(windowType);
+        openWindow(windowType, payload);
         addRecentApp(id);
-        toggleStartMenu();
+        if (shouldToggleStartMenu) {
+          toggleStartMenu();
+        }
       }
     }
   };
