@@ -3,8 +3,12 @@ import { notesRepository } from '@/lib/notesRepository';
 import { Note } from '@/lib/notes';
 import { useShortcut } from '@/hooks/useShortcut';
 import { debounce } from 'lodash';
+import { remark } from 'remark';
+import remarkHtml from 'remark-html';
+import rehypeHighlight from 'rehype-highlight';
 import MarkdownPreview from './MarkdownPreview';
 import NotesSidebar from './NotesSidebar';
+import { Menu } from 'lucide-react';
 
 type ViewMode = 'edit' | 'preview' | 'split';
 
@@ -21,6 +25,7 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
   const [viewMode, setViewMode] = useState<ViewMode>('split');
   const [isEditingTitle, setIsEditingTitle] = useState<boolean>(false);
   const [shouldFocusSearch, setShouldFocusSearch] = useState<boolean>(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true); // New state for sidebar visibility
 
   // Load note on initial mount or when currentNoteId changes
   useEffect(() => {
@@ -193,96 +198,139 @@ const NotesApp: React.FC<NotesAppProps> = ({ id, title, onNoteChange }) => {
     }
   }, [note]);
 
+  const handleExportHtml = useCallback(async () => {
+    if (note) {
+      const processedContent = await remark()
+        .use(remarkHtml, { sanitize: true })
+        .use(rehypeHighlight)
+        .process(note.content);
+      const html = `<!DOCTYPE html>\n<html>\n<head>\n<title>${note.title}</title>\n<meta charset="utf-8">\n</head>\n<body>\n${processedContent.toString()}\n</body>\n</html>`;
 
+      const element = document.createElement("a");
+      const file = new Blob([html], { type: "text/html" });
+      element.href = URL.createObjectURL(file);
+      element.download = `${note.title}.html`;
+      document.body.appendChild(element); // Required for Firefox
+      element.click();
+      document.body.removeChild(element); // Clean up
+    }
+  }, [note]);
+
+  if (!note || currentNoteId === '') {
+    return (
+      <div className="flex h-full bg-gray-900 text-gray-50">
+        <NotesSidebar
+          onSelectNote={handleSelectNote}
+          activeNoteId={currentNoteId}
+          onCreateNewNote={handleCreateNewNote}
+          focusSearchInput={shouldFocusSearch}
+          onNoteChange={onNoteChange}
+        />
+        <div className="flex flex-col flex-1 items-center justify-center text-gray-400 text-xl">
+          <p>Select a note from the sidebar or create a new one.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-full bg-gray-900 text-gray-50">
-      <NotesSidebar
-        onSelectNote={handleSelectNote}
-        activeNoteId={currentNoteId}
-        onCreateNewNote={handleCreateNewNote}
-        focusSearchInput={shouldFocusSearch}
-        onNoteChange={onNoteChange}
-      />
+      {isSidebarOpen && (
+        <NotesSidebar
+          onSelectNote={handleSelectNote}
+          activeNoteId={currentNoteId}
+          onCreateNewNote={handleCreateNewNote}
+          focusSearchInput={shouldFocusSearch}
+          onNoteChange={onNoteChange}
+        />
+      )}
       <div className="flex flex-col flex-1">
-        {note && currentNoteId !== '' ? (
-          <>
-            <div className="flex justify-between items-center p-2 border-b border-gray-700">
-              {isEditingTitle ? (
-                <input
-                  type="text"
-                  value={note.title}
-                  onChange={(e) => setNote((prev) => prev ? { ...prev, title: e.target.value } : null)}
-                  onBlur={handleTitleBlur}
-                  onKeyDown={handleTitleKeyDown}
-                  className="bg-transparent border-b border-neon-green focus:outline-none focus:border-neon-blue focus:filter-neon-glow text-xl font-bold text-neon-green"
-                  autoFocus
-                />
-              ) : (
-                <h1 className="text-xl font-bold text-neon-green cursor-pointer" onClick={() => setIsEditingTitle(true)}>
-                  {note.title}
-                </h1>
-              )}
-              <div className="flex space-x-2">
-                <button
-                  className="px-2 py-1 rounded-md text-sm bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200"
-                  onClick={handleTogglePin}
-                >
-                  {note.pinned ? 'Unpin' : 'Pin'}
-                </button>
-                <button
-                  className="px-2 py-1 rounded-md text-sm bg-red-700 text-white hover:bg-red-600 transition-colors duration-200"
-                  onClick={handleToggleArchive}
-                >
-                  {note.archived ? 'Restore' : 'Delete'}
-                </button>
-                <button
-                  className="px-2 py-1 rounded-md text-sm bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200"
-                  onClick={handleExportMarkdown}
-                >
-                  Export MD
-                </button>
-                <button
-                  className={`px-3 py-1 rounded-md text-sm ${viewMode === 'edit' ? 'bg-neon-blue text-white filter-neon-glow' : 'bg-gray-700 text-gray-300'} focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow`}
-                  onClick={() => setViewMode('edit')}
-                >
-                  Edit
-                </button>
-                <button
-                  className={`px-3 py-1 rounded-md text-sm ${viewMode === 'preview' ? 'bg-neon-blue text-white filter-neon-glow' : 'bg-gray-700 text-gray-300'} focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow`}
-                  onClick={() => setViewMode('preview')}
-                >
-                  Preview
-                </button>
-                <button
-                  className={`px-3 py-1 rounded-md text-sm ${viewMode === 'split' ? 'bg-neon-blue text-white filter-neon-glow' : 'bg-gray-700 text-gray-300'} focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow`}
-                  onClick={() => setViewMode('split')}
-                >
-                  Split
-                </button>
-              </div>
-            </div>
-            <div className="flex flex-1 overflow-hidden transition-all duration-300 ease-in-out">
-              {(viewMode === 'edit' || viewMode === 'split') && (
-                <textarea
-                  className={`flex-1 p-4 bg-gray-800 border-r border-gray-700 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow font-mono text-sm resize-none ${viewMode === 'split' ? 'w-1/2' : 'w-full'}`}
-                  value={editorContent}
-                  onChange={handleEditorChange}
-                  placeholder="Start writing your note..."
-                />
-              )}
-              {(viewMode === 'preview' || viewMode === 'split') && (
-                <div className={`flex-1 ${viewMode === 'split' ? 'w-1/2' : 'w-full'}`}>
-                  <MarkdownPreview content={editorContent} />
-                </div>
-              )}
-            </div>
-          </>
-        ) : (
-          <div className="flex flex-col flex-1 items-center justify-center text-gray-400 text-xl">
-            <p>Select a note from the sidebar or create a new one.</p>
+        <div className="flex justify-between items-center p-2 border-b border-gray-700">
+          <button
+            className="px-2 py-1 rounded-md text-sm bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            <Menu size={20} />
+          </button>
+          {note && currentNoteId !== '' ? (
+            isEditingTitle ? (
+              <input
+                type="text"
+                value={note.title}
+                onChange={(e) => setNote((prev) => prev ? { ...prev, title: e.target.value } : null)}
+                onBlur={handleTitleBlur}
+                onKeyDown={handleTitleKeyDown}
+                className="bg-transparent border-b border-neon-green focus:outline-none focus:border-neon-blue focus:filter-neon-glow text-xl font-bold text-neon-green"
+                autoFocus
+              />
+            ) : (
+              <h1 className="text-xl font-bold text-neon-green cursor-pointer" onClick={() => setIsEditingTitle(true)}>
+                {note.title}
+              </h1>
+            )
+          ) : (
+            <h1 className="text-xl font-bold text-neon-green">Notes</h1>
+          )}
+          <div className="flex space-x-2">
+            <button
+              className="px-2 py-1 rounded-md text-sm bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200"
+              onClick={handleTogglePin}
+            >
+              {note.pinned ? 'Unpin' : 'Pin'}
+            </button>
+            <button
+              className="px-2 py-1 rounded-md text-sm bg-red-700 text-white hover:bg-red-600 transition-colors duration-200"
+              onClick={handleToggleArchive}
+            >
+              {note.archived ? 'Restore' : 'Delete'}
+            </button>
+            <button
+              className="px-2 py-1 rounded-md text-sm bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200"
+              onClick={handleExportMarkdown}
+            >
+              Export MD
+            </button>
+            <button
+              className="px-2 py-1 rounded-md text-sm bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200"
+              onClick={handleExportHtml}
+            >
+              Export HTML
+            </button>
+            <button
+              className={`px-3 py-1 rounded-md text-sm ${viewMode === 'edit' ? 'bg-neon-blue text-white filter-neon-glow' : 'bg-gray-700 text-gray-300'} focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow`}
+              onClick={() => setViewMode('edit')}
+            >
+              Edit
+            </button>
+            <button
+              className={`px-3 py-1 rounded-md text-sm ${viewMode === 'preview' ? 'bg-neon-blue text-white filter-neon-glow' : 'bg-gray-700 text-gray-300'} focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow`}
+              onClick={() => setViewMode('preview')}
+            >
+              Preview
+            </button>
+            <button
+              className={`px-3 py-1 rounded-md text-sm ${viewMode === 'split' ? 'bg-neon-blue text-white filter-neon-glow' : 'bg-gray-700 text-gray-300'} focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow`}
+              onClick={() => setViewMode('split')}
+            >
+              Split
+            </button>
           </div>
-        )}
+        </div>
+        <div className="flex flex-1 overflow-hidden transition-all duration-300 ease-in-out">
+          {(viewMode === 'edit' || viewMode === 'split') && (
+            <textarea
+              className={`flex-1 p-4 bg-gray-800 border-r border-gray-700 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow font-mono text-sm resize-none ${viewMode === 'split' ? 'w-1/2' : 'w-full'}`}
+              value={editorContent}
+              onChange={handleEditorChange}
+              placeholder="Start writing your note..."
+            />
+          )}
+          {(viewMode === 'preview' || viewMode === 'split') && (
+            <div className={`flex-1 ${viewMode === 'split' ? 'w-1/2' : 'w-full'}`}>
+              <MarkdownPreview content={editorContent} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
