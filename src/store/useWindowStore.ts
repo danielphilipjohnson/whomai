@@ -1,27 +1,40 @@
 import { create } from "zustand";
+import { MusicPlayerPayload, JsonViewerPayload, SystemAlertPayload } from "@/lib/windowPayloads";
 
-type WindowType = "logs" | "kernel" | "terminal" | "fileExplorer" | "notes";
+export type WindowType = "logs" | "kernel" | "terminal" | "fileExplorer" | "notes" | "music" | "jsonViewer" | "systemAlert";
 
 export type NotesAppPayload = {
 	id: string;
 	title: string;
-}
+};
 
-export type WindowState = {
-	id: WindowType;
+export type WindowPayloadMap = {
+	logs: undefined;
+	kernel: undefined;
+	terminal: undefined;
+	fileExplorer: undefined;
+	notes: NotesAppPayload;
+	music: MusicPlayerPayload;
+	jsonViewer: JsonViewerPayload;
+	systemAlert: SystemAlertPayload;
+};
+
+export type WindowState<T extends WindowType = WindowType> = {
+	id: T;
 	visible: boolean;
 	zIndex: number;
 	minimized: boolean;
 	maximized: boolean;
-	payload?: NotesAppPayload;
+	payload?: WindowPayloadMap[T];
 };
 
 type Store = {
-	windows: Record<WindowType, WindowState>;
+	windows: { [K in WindowType]: WindowState<K> };
 	topZ: number;
 	startMenuOpen: boolean;
 	toggleStartMenu: () => void;
-	openWindow: (id: WindowType, payload?: NotesAppPayload) => void;
+	setStartMenuOpen: (open: boolean) => void;
+	openWindow: <T extends WindowType>(id: T, payload?: WindowPayloadMap[T]) => void;
 	closeWindow: (id: WindowType) => void;
 	bringToFront: (id: WindowType) => void;
 	toggleWindow: (id: WindowType) => void;
@@ -34,12 +47,21 @@ export const useWindowStore = create<Store>((set, get) => ({
 	topZ: 100,
 	startMenuOpen: false,
 	toggleStartMenu: () => set((state) => ({ startMenuOpen: !state.startMenuOpen })),
+	setStartMenuOpen: (open) => {
+		if (get().startMenuOpen === open) {
+			return;
+		}
+		set({ startMenuOpen: open });
+	},
 	windows: {
 		terminal: { id: "terminal", visible: false, zIndex: 0, minimized: false, maximized: false },
 		logs: { id: "logs", visible: false, zIndex: 0, minimized: false, maximized: false },
 		kernel: { id: "kernel", visible: false, zIndex: 0, minimized: false, maximized: false },
 		fileExplorer: { id: "fileExplorer", visible: false, zIndex: 0, minimized: false, maximized: false },
 		notes: { id: "notes", visible: false, zIndex: 0, minimized: false, maximized: false },
+		music: { id: "music", visible: false, zIndex: 0, minimized: false, maximized: false },
+		jsonViewer: { id: "jsonViewer", visible: false, zIndex: 0, minimized: false, maximized: false },
+		systemAlert: { id: "systemAlert", visible: false, zIndex: 0, minimized: false, maximized: false },
 	},
 
 	openWindow: (id, payload) => {

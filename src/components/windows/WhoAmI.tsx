@@ -1,5 +1,6 @@
 import { useTerminal } from "@/hooks/UseTerminal";
 import { useTerminalBehavior } from "@/hooks/useTerminalBehavior";
+import { useFileSystemStore } from "@/store/useFileSystemStore";
 import { useRef } from "react";
 
 export const WhoAmI = () => {
@@ -12,6 +13,8 @@ export const WhoAmI = () => {
 		whoamiData,
 		handleCommand
 	} = useTerminal();
+	const currentPath = useFileSystemStore((state) => state.currentPath);
+	const promptPath = currentPath === '/' ? '~' : currentPath;
 	
 	useTerminalBehavior(true, inputRef, terminalContentRef); // Always show terminal when rendered inside WindowFrame
 
@@ -104,7 +107,7 @@ export const WhoAmI = () => {
 					e.preventDefault();
 					handleCommand(command);
 				}} className="flex items-center">
-					<span className="text-lime-400 mr-1">guest@cybercity:~$</span>
+					<span className="text-lime-400 mr-1">{`guest@cybercity:${promptPath}$`}</span>
 					<input
 						ref={inputRef}
 						type="text"

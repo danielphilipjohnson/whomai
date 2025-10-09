@@ -9,6 +9,7 @@ import rehypeHighlight from 'rehype-highlight';
 import MarkdownPreview from './MarkdownPreview';
 import NotesSidebar from './NotesSidebar';
 import { Menu } from 'lucide-react';
+import { useFileSystemStore } from '@/store/useFileSystemStore';
 
 type ViewMode = 'edit' | 'preview' | 'split';
 
@@ -26,6 +27,8 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
   const [isEditingTitle, setIsEditingTitle] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true); // New state for sidebar visibility
   const [noteChangeCounter, setNoteChangeCounter] = useState<number>(0);
+  const getItemById = useFileSystemStore((state) => state.getItemById);
+  const readFile = useFileSystemStore((state) => state.readFile);
 
   // Load note on initial mount or when currentNoteId changes
   useEffect(() => {
@@ -220,9 +223,36 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
     }
   }, [note]);
 
+  const handleFileDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const fileId = event.dataTransfer.getData('application/x-cyber-item');
+    if (!fileId) return;
+    const file = getItemById(fileId);
+    if (!file || file.type !== 'file') return;
+    const extension = file.metadata?.extension?.toLowerCase();
+    if (extension !== 'md' && extension !== 'txt') return;
+
+    try {
+      const content = readFile(fileId);
+      const noteTitle = file.name.replace(/\.(md|txt)$/i, '') || file.name;
+      const existing = notesRepository.getAllNotes().find((candidate) => candidate.title === noteTitle);
+      const target = existing ?? notesRepository.createNote(noteTitle);
+      notesRepository.updateNote(target.id, content);
+      setCurrentNoteId(target.id);
+      onNoteChange();
+      setNoteChangeCounter(prev => prev + 1);
+    } catch (error) {
+      console.error('Failed to import file into notes', error);
+    }
+  }, [getItemById, readFile, onNoteChange]);
+
   if (!note || currentNoteId === '') {
     return (
-      <div className="flex h-full bg-gray-900 text-gray-50">
+      <div
+        className="flex h-full bg-gray-900 text-gray-50"
+        onDragOver={(event) => event.preventDefault()}
+        onDrop={handleFileDrop}
+      >
         <NotesSidebar
           onSelectNote={handleSelectNote}
           activeNoteId={currentNoteId}
@@ -237,7 +267,11 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
   }
 
   return (
-    <div className="flex h-full bg-gray-900 text-gray-50">
+    <div
+      className="flex h-full bg-gray-900 text-gray-50"
+      onDragOver={(event) => event.preventDefault()}
+      onDrop={handleFileDrop}
+    >
       {isSidebarOpen && (
         <NotesSidebar
           key={noteChangeCounter} // Add key prop to force re-render

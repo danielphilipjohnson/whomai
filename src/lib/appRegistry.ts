@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-export type AppId = 'terminal'|'notes'|'explorer'|'music'|string
+export type AppId = 'terminal'|'notes'|'explorer'|'music'|'jsonViewer'|string
 
 export interface AppMeta {
 	id: AppId

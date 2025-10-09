@@ -10,7 +10,7 @@ import { usePinnedAppsStore } from "@/store/usePinnedAppsStore";
 import { useRecentAppsStore } from "@/store/useRecentAppsStore";
 
 export function StartMenu() {
-  const { startMenuOpen, toggleStartMenu } = useWindowStore();
+  const { startMenuOpen, setStartMenuOpen } = useWindowStore();
   const { searchApps, launchApp, getApp } = useAppRegistry();
   const { pinnedApps } = usePinnedAppsStore();
   const { recentApps } = useRecentAppsStore();
@@ -44,7 +44,7 @@ export function StartMenu() {
   };
 
   return (
-    <Dialog open={startMenuOpen} onOpenChange={toggleStartMenu}>
+    <Dialog open={startMenuOpen} onOpenChange={setStartMenuOpen}>
       <DialogContent onKeyDown={handleKeyDown}>
         <DialogTitle className="sr-only">Start Menu</DialogTitle>
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.2 }}>

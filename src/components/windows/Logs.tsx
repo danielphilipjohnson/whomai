@@ -2,6 +2,8 @@ import React from 'react';
 
 const Logs = () => {
 	const logEntries = [
+		"[07:21:02] [SYS]: Mounting /Documents",
+		"[07:21:03] [OK]: File system online",
 		"[07:23:44] [SYS] Kernel wake event received",
 		"[07:23:48] [AUTH] guest accessed /datavault",
 		"[07:24:01] [NET] Link to GitHub resolved",

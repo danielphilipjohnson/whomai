@@ -202,3 +202,37 @@ export const NotesSvg = (
   </svg>
 
 );
+
+export const MusicSvg = (
+	<svg className="w-24 h-24" width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+		<rect width="64" height="64" rx="8" fill="#09090f" />
+		<rect x="2" y="2" width="60" height="60" rx="8" stroke="#00ffe0" strokeWidth="1.5" />
+		<path d="M22 20v24" stroke="#33ffcc" strokeWidth="2" strokeLinecap="round" />
+		<path d="M42 16v22" stroke="#ff3df5" strokeWidth="2" strokeLinecap="round" />
+		<circle cx="22" cy="44" r="6" fill="#0f1022" stroke="#33ffcc" strokeWidth="2" />
+		<circle cx="42" cy="40" r="6" fill="#150f22" stroke="#ff3df5" strokeWidth="2" />
+		<path d="M20 28h8" stroke="#00ffe0" strokeWidth="1.5" strokeLinecap="round" />
+		<path d="M40 22h8" stroke="#ff3df5" strokeWidth="1.5" strokeLinecap="round" />
+		<g opacity="0.3" stroke="#00ffe0" strokeDasharray="2 2">
+			<path d="M10 2v60" />
+			<path d="M54 2v60" />
+		</g>
+	</svg>
+);
+
+export const DataSvg = (
+	<svg className="w-24 h-24" width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+		<rect width="64" height="64" rx="8" fill="#0a0a12" />
+		<rect x="2" y="2" width="60" height="60" rx="8" stroke="#7b5bff" strokeWidth="1.5" />
+		<rect x="12" y="16" width="40" height="32" rx="4" fill="#0c0d1f" stroke="#7b5bff" strokeWidth="1.5" />
+		<path d="M16 22h12" stroke="#33ffcc" strokeWidth="1.5" strokeLinecap="round" />
+		<path d="M16 28h24" stroke="#33ffcc" strokeWidth="1.5" strokeLinecap="round" />
+		<path d="M16 34h20" stroke="#33ffcc" strokeWidth="1.5" strokeLinecap="round" />
+		<rect x="30" y="40" width="18" height="6" rx="2" fill="#16172f" stroke="#ff3df5" strokeWidth="1.2" />
+		<path d="M34 42h6" stroke="#ff3df5" strokeWidth="1.2" strokeLinecap="round" />
+		<g opacity="0.3" stroke="#7b5bff" strokeDasharray="2 2">
+			<path d="M12 10h40" />
+			<path d="M12 50h40" />
+		</g>
+	</svg>
+);

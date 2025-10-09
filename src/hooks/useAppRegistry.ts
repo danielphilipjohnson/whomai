@@ -5,7 +5,7 @@ import { NotesAppPayload, useWindowStore } from "@/store/useWindowStore";
 import { useRecentAppsStore } from "@/store/useRecentAppsStore";
 import Fuse from "fuse.js";
 import { useCallback, useState } from "react";
-import { TerminalSvg, LogSvg, KernelSvg, FileExplorerSvg, NotesSvg } from "@/lib/svgIcons";
+import { TerminalSvg, LogSvg, KernelSvg, FileExplorerSvg, NotesSvg, MusicSvg, DataSvg } from "@/lib/svgIcons";
 
 const initialApps: AppMeta[] = [
   {
@@ -48,6 +48,23 @@ const initialApps: AppMeta[] = [
     keywords: ["files", "finder", "browser"],
     icon: FileExplorerSvg,
   },
+  {
+    id: "music",
+    name: "Music Player",
+    description: "Queue neon soundscapes and mp3 files.",
+    category: "Media",
+    keywords: ["audio", "mp3", "player"],
+    icon: MusicSvg,
+  },
+  {
+    id: "jsonViewer",
+    name: "Data Inspector",
+    description: "Visualise JSON payloads with structure.",
+    category: "Utilities",
+    keywords: ["json", "data", "inspector"],
+    icon: DataSvg,
+    beta: true,
+  },
 ];
 
 const fuse = new Fuse(initialApps, {
@@ -60,7 +77,7 @@ const fuse = new Fuse(initialApps, {
 
 export const useAppRegistry = () => {
   const [apps] = useState<AppMeta[]>(initialApps);
-  const { openWindow, toggleStartMenu } = useWindowStore();
+  const { openWindow, setStartMenuOpen } = useWindowStore();
   const { addRecentApp } = useRecentAppsStore();
 
   const listApps = useCallback(() => apps, [apps]);
@@ -76,12 +93,14 @@ export const useAppRegistry = () => {
     const app = getApp(id);
     if (app) {
       // Map app IDs to window types
-      const windowTypeMap: Record<string, "logs" | "kernel" | "terminal" | "fileExplorer" | "notes"> = {
+      const windowTypeMap: Record<string, "logs" | "kernel" | "terminal" | "fileExplorer" | "notes" | "music" | "jsonViewer"> = {
         terminal: "terminal",
         logs: "logs", 
         kernel: "kernel",
         explorer: "fileExplorer",
-        notes: "notes"
+        notes: "notes",
+        music: "music",
+        jsonViewer: "jsonViewer",
       };
       
       const windowType = windowTypeMap[id];
@@ -89,7 +108,7 @@ export const useAppRegistry = () => {
         openWindow(windowType, payload as NotesAppPayload);
         addRecentApp(id);
         if (shouldToggleStartMenu) {
-          toggleStartMenu();
+          setStartMenuOpen(false);
         }
       }
     }

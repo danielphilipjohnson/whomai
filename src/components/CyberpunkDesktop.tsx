@@ -10,6 +10,9 @@ import { StartMenu } from './StartMenu';
 import { useShortcut } from "@/hooks/useShortcut";
 import { useAppRegistry } from "@/hooks/useAppRegistry";
 import WindowFrame from "./windows/WindowFrame";
+import MusicPlayer from './windows/MusicPlayer';
+import JsonViewer from './windows/JsonViewer';
+import SystemAlert from './windows/SystemAlert';
 
 const CyberpunkDesktop = () => {
 	const { windows, openWindow, closeWindow, bringToFront, minimizeWindow, maximizeWindow, toggleStartMenu } = useWindowStore();
@@ -19,6 +22,8 @@ const CyberpunkDesktop = () => {
 	const logsAppMeta = getApp("logs");
 	const kernelAppMeta = getApp("kernel");
 	const fileExplorerAppMeta = getApp("explorer");
+	const musicAppMeta = getApp("music");
+	const jsonViewerMeta = getApp("jsonViewer");
 
 
 	const handleNotesChange = () => {
@@ -88,6 +93,32 @@ const CyberpunkDesktop = () => {
 					</WindowFrame>
 				)}
 
+				{musicAppMeta && (
+					<WindowFrame
+						windowState={windows.music}
+						onClose={() => closeWindow("music")}
+						onMinimize={() => minimizeWindow("music")}
+						onMaximize={() => maximizeWindow("music")}
+						onBringToFront={() => bringToFront("music")}
+						title={musicAppMeta.name}
+					>
+						<MusicPlayer payload={windows.music.payload} />
+					</WindowFrame>
+				)}
+
+				{jsonViewerMeta && (
+					<WindowFrame
+						windowState={windows.jsonViewer}
+						onClose={() => closeWindow("jsonViewer")}
+						onMinimize={() => minimizeWindow("jsonViewer")}
+						onMaximize={() => maximizeWindow("jsonViewer")}
+						onBringToFront={() => bringToFront("jsonViewer")}
+						title={jsonViewerMeta.name}
+					>
+						<JsonViewer payload={windows.jsonViewer.payload} />
+					</WindowFrame>
+				)}
+
 				{kernelAppMeta && windows.kernel.visible && (
 					<WindowFrame
 						windowState={windows.kernel}
@@ -98,6 +129,19 @@ const CyberpunkDesktop = () => {
 						title={kernelAppMeta.name}
 					>
 						<Kernel />
+					</WindowFrame>
+				)}
+
+				{windows.systemAlert.visible && (
+					<WindowFrame
+						windowState={windows.systemAlert}
+						onClose={() => closeWindow("systemAlert")}
+						onMinimize={() => minimizeWindow("systemAlert")}
+						onMaximize={() => maximizeWindow("systemAlert")}
+						onBringToFront={() => bringToFront("systemAlert")}
+						title="System Alert"
+					>
+						<SystemAlert payload={windows.systemAlert.payload} />
 					</WindowFrame>
 				)}
 			</div>

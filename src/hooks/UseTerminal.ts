@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { generateWhoAmIData } from "@/lib/generateWhoAmIData";
 import { notesRepository } from "@/lib/notesRepository";
 import { useWindowStore } from "@/store/useWindowStore";
+import { useFileSystemStore } from "@/store/useFileSystemStore";
 import { remark } from 'remark';
 import remarkHtml from 'remark-html';
 import rehypeHighlight from 'rehype-highlight';
+import { FileSystemItem } from '@/lib/fileSystemTypes';
 
 interface WhoAmIData {
 	ipaddress: string;
@@ -25,43 +27,108 @@ export const useTerminal = () => {
 		'Type "help" for available commands'
 	]);
 	const [whoamiData, setWhoamiData] = useState<WhoAmIData | null>(null);
-	const { openWindow } = useWindowStore();
+	const { openWindow, closeWindow } = useWindowStore();
 
 	const handleCommand = async (input: string) => {
+		const fs = useFileSystemStore.getState();
+		const cwd = fs.currentPath || '/';
+		const promptPath = cwd === '/' ? '~' : cwd;
 		const trimmed = input.trim();
-		const newHistory = [...history, `guest@cybercity:~$ ${input}`];
-		const [cmd, ...args] = trimmed.split(' ');
+		const baseHistory = [...history, `guest@cybercity:${promptPath}$ ${input}`];
+		const [cmdRaw, ...args] = trimmed.split(/\s+/);
+		const cmd = cmdRaw.toLowerCase();
 
-		switch (cmd.toLowerCase()) {
-			case 'whoami':
-				setHistory([...newHistory, 'Scanning system...']);
-				setTimeout(() => {
-					const data: WhoAmIData = generateWhoAmIData();
-					setWhoamiData(data);
-					setHistory([...newHistory, 'Scanning system...', 'Scan complete. Identity information retrieved.']);
-				}, 1500);
-				break;
-			case 'clear':
-				setHistory([]);
-				setWhoamiData(null);
-				break;
-			case 'help':
-				setHistory([
-					...newHistory,
-					'Available commands:',
-					'  whoami   - Display your browser information',
-					'  clear    - Clear the terminal',
-					'  help     - Show this help message',
-					'  notes    - Interact with the Notes app (type "notes help" for more info)',
-					'  exit     - Close the terminal'
-				]);
-				break;
-			case 'notes':
-				const [notesSubcommand, ...notesArgs] = args;
-				switch (notesSubcommand?.toLowerCase()) {
+		const resolvePath = (target = '.') => {
+			const segments = target.split('/');
+			const baseSegments = cwd.split('/').filter(Boolean);
+			const resultSegments = target.startsWith('/') ? [] : [...baseSegments];
+			segments.forEach((segment) => {
+				if (!segment || segment === '.') return;
+				if (segment === '..') {
+					resultSegments.pop();
+					return;
+				}
+				resultSegments.push(segment);
+			});
+			return '/' + resultSegments.join('/');
+		};
+
+		const openFile = (item: FileSystemItem) => {
+			if (item.type !== 'file') return;
+			const extension = item.metadata?.extension?.toLowerCase();
+			try {
+				switch (extension) {
+					case 'md': {
+						const content = fs.readFile(item.id);
+						const noteTitle = item.name.replace(/\.md$/i, '') || item.name;
+						const existing = notesRepository.getAllNotes().find((note) => note.title === noteTitle);
+						const target = existing ?? notesRepository.createNote(noteTitle);
+						notesRepository.updateNote(target.id, content);
+						openWindow('notes', { id: target.id, title: target.title });
+						break;
+					}
+					case 'mp3':
+					case 'wav':
+						openWindow('music', { fileId: item.id, name: item.name, path: item.path });
+						break;
+					case 'json': {
+						const content = fs.readFile(item.id);
+						openWindow('jsonViewer', { fileId: item.id, name: item.name, content, path: item.path });
+						break;
+					}
+					case 'sys':
+						openWindow('systemAlert', {
+							title: 'ACCESS RESTRICTED',
+							message: `Security kernel blocked ${item.name}.`,
+							severity: 'error',
+						});
+						break;
+					default:
+						openWindow('systemAlert', {
+							title: 'UNSUPPORTED FILE',
+							message: `${item.name} has no associated app yet.`,
+							severity: 'warning',
+						});
+				}
+			} catch (error) {
+				openWindow('systemAlert', {
+					title: 'OPEN FAILED',
+					message: `Could not open ${item.name}. ${(error as Error).message}`,
+					severity: 'error',
+				});
+			}
+		};
+
+		if (!trimmed) {
+			setHistory(baseHistory);
+			setCommand('');
+			return;
+		}
+
+		if (cmd === 'whoami') {
+			setHistory([...baseHistory, 'Scanning system...']);
+			setTimeout(() => {
+				const data: WhoAmIData = generateWhoAmIData();
+				setWhoamiData(data);
+				setHistory([...baseHistory, 'Scanning system...', 'Scan complete. Identity information retrieved.']);
+			}, 1500);
+			setCommand('');
+			return;
+		}
+
+		if (cmd === 'clear') {
+			setHistory([]);
+			setWhoamiData(null);
+			setCommand('');
+			return;
+		}
+
+		if (cmd === 'notes') {
+			const [notesSubcommand, ...notesArgs] = args;
+			switch (notesSubcommand?.toLowerCase()) {
 					case 'help':
 						setHistory([
-							...newHistory,
+							...baseHistory,
 							'Notes app commands:',
 							'  notes open <title>       - Opens or creates a note window',
 							'  notes list               - Lists all notes',
@@ -75,34 +142,34 @@ export const useTerminal = () => {
 					case 'list':
 						const allNotes = notesRepository.getAllNotes();
 						if (allNotes.length === 0) {
-							setHistory([...newHistory, 'No notes found.']);
+							setHistory([...baseHistory, 'No notes found.']);
 						} else {
 							const noteList = allNotes.map(note => `- ${note.title} (ID: ${note.id.substring(0, 8)}...)`);
-							setHistory([...newHistory, 'Your notes:', ...noteList]);
+							setHistory([...baseHistory, 'Your notes:', ...noteList]);
 						}
 						break;
 					case 'new':
 						const newTitle = notesArgs.join(' ').replace(/^"|"$/g, '');
 							if (!newTitle) {
-							setHistory([...newHistory, 'Usage: notes new "<title>"']);
+							setHistory([...baseHistory, 'Usage: notes new "<title>"']);
 							break;
 						}
 						const createdNote = notesRepository.createNote(newTitle);
 						openWindow('notes', { id: createdNote.id, title: createdNote.title });
-						setHistory([...newHistory, `Note "${createdNote.title}" created and opened.`]);
+						setHistory([...baseHistory, `Note "${createdNote.title}" created and opened.`]);
 						break;
 					case 'open':
 						const openTitle = notesArgs.join(' ').replace(/^"|"$/g, '');
 							if (!openTitle) {
-							setHistory([...newHistory, 'Usage: notes open <title>']);
+							setHistory([...baseHistory, 'Usage: notes open <title>']);
 							break;
 						}
 						const noteToOpen = notesRepository.getAllNotes().find(n => n.title.toLowerCase() === openTitle.toLowerCase());
 							if (noteToOpen) {
 							openWindow('notes', { id: noteToOpen.id, title: noteToOpen.title });
-							setHistory([...newHistory, `Note "${noteToOpen.title}" opened.`]);
+							setHistory([...baseHistory, `Note "${noteToOpen.title}" opened.`]);
 						} else {
-							setHistory([...newHistory, `Note "${openTitle}" not found. Creating new note.`]);
+							setHistory([...baseHistory, `Note "${openTitle}" not found. Creating new note.`]);
 							const newNote = notesRepository.createNote(openTitle);
 							openWindow('notes', { id: newNote.id, title: newNote.title });
 						}
@@ -110,21 +177,21 @@ export const useTerminal = () => {
 					case 'delete':
 						const deleteTitle = notesArgs.join(' ').replace(/^"|"$/g, '');
 							if (!deleteTitle) {
-							setHistory([...newHistory, 'Usage: notes delete "<title>"']);
+							setHistory([...baseHistory, 'Usage: notes delete "<title>"']);
 							break;
 						}
 						const noteToDelete = notesRepository.getAllNotes().find(n => n.title.toLowerCase() === deleteTitle.toLowerCase());
 							if (noteToDelete) {
 							notesRepository.toggleArchive(noteToDelete.id); // Soft delete
-							setHistory([...newHistory, `Note "${noteToDelete.title}" moved to archive.`]);
+							setHistory([...baseHistory, `Note "${noteToDelete.title}" moved to archive.`]);
 						} else {
-							setHistory([...newHistory, `Note "${deleteTitle}" not found.`]);
+							setHistory([...baseHistory, `Note "${deleteTitle}" not found.`]);
 						}
 						break;
 					case 'search':
 						const searchQuery = notesArgs.join(' ').replace(/^"|"$/g, '');
 							if (!searchQuery) {
-							setHistory([...newHistory, 'Usage: notes search "<query>"']);
+							setHistory([...baseHistory, 'Usage: notes search "<query>"']);
 							break;
 						}
 						const matchingNotes = notesRepository.getAllNotes().filter(
@@ -132,10 +199,10 @@ export const useTerminal = () => {
 															note.content.toLowerCase().includes(searchQuery.toLowerCase())
 						);
 							if (matchingNotes.length === 0) {
-							setHistory([...newHistory, `No notes found matching "${searchQuery}".`]);
+							setHistory([...baseHistory, `No notes found matching "${searchQuery}".`]);
 						} else {
 							const searchResults = matchingNotes.map(note => `- ${note.title} (ID: ${note.id.substring(0, 8)}...)`);
-							setHistory([...newHistory, `Notes matching "${searchQuery}":`, ...searchResults]);
+							setHistory([...baseHistory, `Notes matching "${searchQuery}":`, ...searchResults]);
 						}
 						break;
 					case 'export':
@@ -143,13 +210,13 @@ export const useTerminal = () => {
 						const exportFormat = notesArgs[1]?.toLowerCase();
 
 						if (!exportTitle || !(exportFormat === 'md' || exportFormat === 'html')) {
-							setHistory([...newHistory, 'Usage: notes export "<title>" md|html']);
+							setHistory([...baseHistory, 'Usage: notes export "<title>" md|html']);
 							break;
 						}
 
 						const noteToExport = notesRepository.getAllNotes().find(n => n.title.toLowerCase() === exportTitle.toLowerCase());
 							if (!noteToExport) {
-							setHistory([...newHistory, `Note "${exportTitle}" not found.`]);
+							setHistory([...baseHistory, `Note "${exportTitle}" not found.`]);
 							break;
 						}
 
@@ -178,7 +245,7 @@ export const useTerminal = () => {
 						document.body.appendChild(element); // Required for Firefox
 						element.click();
 						document.body.removeChild(element); // Clean up
-						setHistory([...newHistory, `Note "${noteToExport.title}" exported as ${fileName}.`]);
+						setHistory([...baseHistory, `Note "${noteToExport.title}" exported as ${fileName}.`]);
 																	break;
 											case 'today':
 												const today = new Date();
@@ -187,24 +254,196 @@ export const useTerminal = () => {
 						
 												if (!dailyNote) {
 													dailyNote = notesRepository.createNote(todayTitle);
-													setHistory([...newHistory, `Created daily note: "${todayTitle}".`]);
+													setHistory([...baseHistory, `Created daily note: "${todayTitle}".`]);
 												} else {
-													setHistory([...newHistory, `Opening existing daily note: "${todayTitle}".`]);
+													setHistory([...baseHistory, `Opening existing daily note: "${todayTitle}".`]);
 												}
 												openWindow('notes', { id: dailyNote.id, title: dailyNote.title });
 												break;
 											default:
-												setHistory([...newHistory, `Unknown notes subcommand: ${notesSubcommand}. Type "notes help" for more info.`]);
+												setHistory([...baseHistory, `Unknown notes subcommand: ${notesSubcommand}. Type "notes help" for more info.`]);
 												break;				}
-				break;
-			default:
-				setHistory([
-					...newHistory,
-					`Command not found: ${input}. Type 'help' for available commands.`
-				]);
-				break;
+			setCommand('');
+			return;
 		}
 
+		const output: string[] = [];
+		try {
+			switch (cmd) {
+				case 'help':
+					output.push(
+						'Available commands:',
+						'  whoami       - Display your browser information',
+						'  clear        - Clear the terminal',
+						'  pwd          - Print current directory',
+						'  ls [path]    - List directory contents',
+						'  cd <path>    - Change directory',
+						'  mkdir <name> - Create a directory',
+						'  touch <name> - Create an empty file',
+						'  rm <name>    - Delete file or folder',
+						'  open <file>  - Open file with associated app',
+						'  cat <file>   - Display file contents',
+						'  tree [path]  - ASCII tree view',
+						'  notes        - Notes app commands',
+						'  exit         - Close the terminal'
+					);
+					break;
+				case 'pwd':
+					output.push(cwd);
+					break;
+				case 'ls': {
+					const targetPath = args[0] ? resolvePath(args[0]) : cwd;
+					const directory = fs.getItemByPath(targetPath);
+					if (!directory || directory.type !== 'folder') {
+						output.push(`ls: no such directory: ${args[0] ?? targetPath}`);
+						break;
+					}
+					const entries = fs.listDirectory(directory.id);
+					if (!entries.length) {
+						output.push('(empty)');
+						break;
+					}
+					const formatted = entries.map((entry) => (entry.type === 'folder' ? `${entry.name}/` : entry.name));
+					output.push(formatted.join('  '));
+					break;
+				}
+				case 'cd': {
+					const target = resolvePath(args[0] ?? '/');
+					const destination = fs.getItemByPath(target);
+					if (!destination || destination.type !== 'folder') {
+						output.push(`cd: no such directory: ${args[0] ?? target}`);
+						break;
+					}
+					fs.setCurrentPath(target);
+					output.push(`Now in ${target}`);
+					break;
+				}
+				case 'mkdir': {
+					const name = args[0];
+					if (!name) {
+						output.push('Usage: mkdir <name>');
+						break;
+					}
+					if (name.includes('/')) {
+						output.push('mkdir: path separators are not supported.');
+						break;
+					}
+					const created = fs.createItemInCurrent(name, 'folder');
+					output.push(`Directory created: ${created.name}`);
+					break;
+				}
+				case 'touch': {
+					const filename = args[0];
+					if (!filename) {
+						output.push('Usage: touch <name>');
+						break;
+					}
+					const currentDir = fs.getItemByPath(cwd);
+					if (!currentDir || currentDir.type !== 'folder') {
+						output.push('touch: current directory invalid');
+						break;
+					}
+					const existing = fs.listDirectory(currentDir.id).find((entry) => entry.name === filename);
+					if (existing && existing.type === 'file') {
+						const content = fs.readFile(existing.id);
+						fs.writeFile(existing.id, content);
+						output.push(`Updated timestamp for ${existing.name}`);
+					} else if (existing) {
+						output.push('touch: cannot overwrite directory');
+					} else {
+						const created = fs.createItemInCurrent(filename, 'file');
+						output.push(`File created: ${created.name}`);
+					}
+					break;
+				}
+				case 'rm': {
+					const targetName = args[0];
+					if (!targetName) {
+						output.push('Usage: rm <name>');
+						break;
+					}
+					const currentDir = fs.getItemByPath(cwd);
+					if (!currentDir || currentDir.type !== 'folder') {
+						output.push('rm: current directory invalid');
+						break;
+					}
+					const entries = fs.listDirectory(currentDir.id);
+					const targetItem = entries.find((entry) => entry.name === targetName);
+					if (!targetItem) {
+						output.push(`rm: cannot remove '${targetName}': No such file or directory`);
+						break;
+					}
+					const soft = !fs.isInTrash(targetItem.id);
+					fs.deleteItems([targetItem.id], { soft });
+					output.push(soft ? `Moved ${targetItem.name} to Trash` : `Deleted ${targetItem.name}`);
+					break;
+				}
+				case 'open': {
+					const target = args[0];
+					if (!target) {
+						output.push('Usage: open <file>');
+						break;
+					}
+					const fullPath = resolvePath(target);
+					const file = fs.getItemByPath(fullPath);
+					if (!file || file.type !== 'file') {
+						output.push(`open: file not found: ${target}`);
+						break;
+					}
+					openFile(file);
+					output.push(`Opened ${file.name}`);
+					break;
+				}
+				case 'cat': {
+					const target = args[0];
+					if (!target) {
+						output.push('Usage: cat <file>');
+						break;
+					}
+					const fullPath = resolvePath(target);
+					const file = fs.getItemByPath(fullPath);
+					if (!file || file.type !== 'file') {
+						output.push(`cat: file not found: ${target}`);
+						break;
+					}
+					const content = fs.readFile(file.id);
+					output.push(...(content ? content.split('\n') : ['']));
+					break;
+				}
+				case 'tree': {
+					const startPath = args[0] ? resolvePath(args[0]) : cwd;
+					const root = fs.getItemByPath(startPath);
+					if (!root || root.type !== 'folder') {
+						output.push(`tree: no such directory: ${args[0] ?? startPath}`);
+						break;
+					}
+					const buildTree = (folderId: string, prefix = ''): string[] => {
+						const children = fs.listDirectory(folderId);
+						return children.flatMap((child, index) => {
+							const isLast = index === children.length - 1;
+							const connector = `${prefix}${isLast ? '└── ' : '├── '}${child.type === 'folder' ? child.name + '/' : child.name}`;
+							const childPrefix = `${prefix}${isLast ? '    ' : '│   '}`;
+							return child.type === 'folder'
+								? [connector, ...buildTree(child.id, childPrefix)]
+								: [connector];
+						});
+					};
+					output.push(root.path);
+					output.push(...buildTree(root.id));
+					break;
+				}
+				case 'exit':
+					closeWindow('terminal');
+					output.push('Closing terminal...');
+					break;
+				default:
+					output.push(`Command not found: ${input}. Type 'help' for available commands.`);
+				}
+		} catch (error) {
+			output.push(`Error: ${(error as Error).message}`);
+		}
+
+		setHistory([...baseHistory, ...output]);
 		setCommand('');
 	};
 
