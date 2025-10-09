@@ -3,7 +3,6 @@
 import * as React from "react";
 import { useClock } from "@/hooks/useClock";
 import { format } from "date-fns";
-import { useBootSequence } from "@/hooks/useBootSequence";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,36 +13,41 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOut, RefreshCw, Settings2, SunMoon, User2 } from "lucide-react";
+import { useBootSequence } from "@/hooks/useBootSequence";
+import { useSession } from "@/hooks/useSession";
 
 export const Topbar = () => {
   const currentTime = useClock();
   const { beginBoot } = useBootSequence();
+  const { user, logout } = useSession();
+
   const timeString = format(currentTime, "HH:mm");
   const dateString = format(currentTime, "EEE, MMM d");
 
-  const [user, setUser] = React.useState<UserSummary>({
-    name: "Operator-VOID",
-    email: "void@core.os",
-  });
-
-  React.useEffect(() => {
-    const fallback = Math.random().toString(16).slice(2, 6).toUpperCase();
-    const idSource = typeof window !== "undefined" && typeof window.crypto !== "undefined" && "randomUUID" in window.crypto
-      ? window.crypto.randomUUID().slice(0, 4).toUpperCase()
-      : fallback;
-    setUser({
-      name: `Operator-${idSource}`,
-      email: `void@${idSource.toLowerCase()}.os`,
-    });
-  }, []);
+  const identity = React.useMemo(() => {
+    if (!user) {
+      return {
+        name: "Awaiting Login",
+        email: "guest@void.os",
+        isGuest: true,
+      };
+    }
+    return {
+      name: user.name,
+      email: `${user.name.replace(/\s+/g, "").toLowerCase()}@void.os`,
+      isGuest: false,
+    };
+  }, [user]);
 
   const handleReboot = React.useCallback(() => {
-    beginBoot();
-  }, [beginBoot]);
+    if (!identity.isGuest) {
+      beginBoot();
+    }
+  }, [beginBoot, identity.isGuest]);
 
   const handleLogout = React.useCallback(() => {
-    console.info("TODO: hook logout flow");
-  }, []);
+    logout();
+  }, [logout]);
 
   return (
     <div className="z-20 flex h-12 items-center justify-between border-b border-cyan-400 bg-black/80 px-4 font-mono text-xs tracking-wide text-cyan-300 shadow-[0_0_6px_#00fff7] backdrop-blur-md md:h-8">
@@ -76,7 +80,11 @@ export const Topbar = () => {
       </div>
 
       <div className="flex items-center gap-3 border-l border-cyan-500 pl-3 text-cyan-400">
-        <AccountDropdown user={user} onReboot={handleReboot} onLogout={handleLogout} />
+        {identity.isGuest ? (
+          <GuestBadge label={identity.name} />
+        ) : (
+          <AccountDropdown user={identity} onReboot={handleReboot} onLogout={handleLogout} />
+        )}
         <div className="text-right">
           {timeString} <span className="hidden md:inline">• {dateString}</span>
         </div>
@@ -88,6 +96,7 @@ export const Topbar = () => {
 type UserSummary = {
   name: string;
   email: string;
+  isGuest?: boolean;
 };
 
 type AccountDropdownProps = {
@@ -152,3 +161,15 @@ const AccountDropdown = ({ user, onReboot, onLogout }: AccountDropdownProps) => 
     </DropdownMenuContent>
   </DropdownMenu>
 );
+
+type GuestBadgeProps = {
+  label: string;
+};
+
+const GuestBadge = ({ label }: GuestBadgeProps) => (
+  <div className="rounded-lg border border-cyan-500/30 bg-cyan-500/5 px-3 py-1 text-[11px] uppercase tracking-[0.3em] text-cyan-400">
+    {label}
+  </div>
+);
+
+export default Topbar;

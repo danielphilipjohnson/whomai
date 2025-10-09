@@ -9,7 +9,7 @@ type BootState = {
 };
 
 export const useBootSequence = create<BootState>((set) => ({
-  booting: true,
+  booting: false,
   beginBoot: () => set({ booting: true }),
   finishBoot: () => set({ booting: false }),
 }));
