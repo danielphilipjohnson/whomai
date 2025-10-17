@@ -2,6 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { notesRepository } from '@/lib/notesRepository';
 import { Note } from '@/lib/notes';
 import { Trash2 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 type NoteFilter = 'all' | 'active' | 'archived';
 
@@ -21,6 +29,7 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
   const [allNotes, setAllNotes] = useState<Note[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filter, setFilter] = useState<NoteFilter>('active');
+  const [notePendingDeletion, setNotePendingDeletion] = useState<Note | null>(null);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
 
   const fetchNotes = () => {
@@ -85,6 +94,19 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
       note.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       note.content.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleConfirmDelete = () => {
+    if (!notePendingDeletion) return;
+    const { id } = notePendingDeletion;
+    notesRepository.deleteNote(id);
+    fetchNotes();
+    if (activeNoteId === id) {
+      onSelectNote('');
+    }
+    setNotePendingDeletion(null);
+  };
+
+  const noteTitle = notePendingDeletion?.title || 'Untitled Note';
 
   return (
     <div className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
@@ -154,13 +176,7 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
                 className="text-red-500 hover:text-red-400 text-xs ml-2 p-1 rounded-full hover:bg-gray-700 absolute"
                 onClick={(e) => {
                   e.stopPropagation(); // Prevent selecting the note when clicking delete
-                  if (confirm(`Are you sure you want to permanently delete "${note.title}"?`)) {
-                    notesRepository.deleteNote(note.id);
-                    fetchNotes(); // Refresh the list
-                    if (activeNoteId === note.id) {
-                      onSelectNote(''); // Deselect if the deleted note was active
-                    }
-                  }
+                  setNotePendingDeletion(note);
                 }}
               >
                 <Trash2 size={16} />
@@ -171,13 +187,7 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
                 className="text-red-500 hover:text-red-400 text-xs ml-2 p-1 rounded-full hover:bg-gray-700"
                 onClick={(e) => {
                   e.stopPropagation(); // Prevent selecting the note when clicking delete
-                  if (confirm(`Are you sure you want to permanently delete "${note.title}"?`)) {
-                    notesRepository.deleteNote(note.id);
-                    fetchNotes(); // Refresh the list
-                    if (activeNoteId === note.id) {
-                      onSelectNote(''); // Deselect if the deleted note was active
-                    }
-                  }
+                  setNotePendingDeletion(note);
                 }}
               >
                 <Trash2 size={16} />
@@ -186,6 +196,35 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
           </div>
         ))}
       </div>
+      <Dialog open={!!notePendingDeletion} onOpenChange={(open) => !open && setNotePendingDeletion(null)}>
+        <DialogContent className="bg-black/90 border border-fuchsia-500 shadow-[0_0_35px_rgba(188,19,254,0.45)] text-gray-100">
+          <DialogHeader>
+            <DialogTitle className="text-neon-purple uppercase tracking-[0.2em] text-sm">Purge Confirmation</DialogTitle>
+            <DialogDescription className="text-gray-300">
+              You are about to erase <span className="text-neon-blue font-semibold">{noteTitle}</span>. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="mt-4 rounded-md border border-fuchsia-600/40 bg-gradient-to-br from-fuchsia-900/20 via-black to-slate-900/50 p-4 text-xs text-gray-300">
+            <p className="font-mono text-[13px] leading-relaxed">
+              ↳ Confirm purge to reclaim memory sectors. Cancel to keep the note intact.
+            </p>
+          </div>
+          <DialogFooter className="mt-6 flex-row gap-3">
+            <button
+              className="flex-1 rounded-md border border-gray-600 bg-transparent px-3 py-2 text-sm uppercase tracking-wide text-gray-300 transition hover:border-neon-blue hover:text-neon-blue"
+              onClick={() => setNotePendingDeletion(null)}
+            >
+              Abort
+            </button>
+            <button
+              className="flex-1 rounded-md border border-fuchsia-500 bg-fuchsia-900/40 px-3 py-2 text-sm uppercase tracking-wide text-fuchsia-200 transition hover:bg-fuchsia-700/40 hover:text-white hover:shadow-[0_0_20px_rgba(255,7,58,0.6)]"
+              onClick={handleConfirmDelete}
+            >
+              Confirm Purge
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
