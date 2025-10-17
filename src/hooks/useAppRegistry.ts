@@ -5,7 +5,7 @@ import { NotesAppPayload, useWindowStore } from "@/store/useWindowStore";
 import { useRecentAppsStore } from "@/store/useRecentAppsStore";
 import Fuse from "fuse.js";
 import { useCallback, useState } from "react";
-import { TerminalSvg, LogSvg, KernelSvg, FileExplorerSvg, NotesSvg, MusicSvg, DataSvg } from "@/lib/svgIcons";
+import { TerminalSvg, LogSvg, KernelSvg, FileExplorerSvg, NotesSvg, MusicSvg, DataSvg, LockSvg, MiraSvg } from "@/lib/svgIcons";
 
 const initialApps: AppMeta[] = [
   {
@@ -65,6 +65,24 @@ const initialApps: AppMeta[] = [
     icon: DataSvg,
     beta: true,
   },
+  {
+    id: "vault",
+    name: "Vault",
+    description: "Access restricted files.",
+    category: "System",
+    keywords: ["files", "secrets", "vault"],
+    icon: LockSvg,
+    hidden: true,
+  },
+  {
+    id: "mira",
+    name: "MIRA",
+    description: "Connect to the AI companion.",
+    category: "System",
+    keywords: ["ai", "assistant", "mira"],
+    icon: MiraSvg,
+    hidden: true,
+  },
 ];
 
 const fuse = new Fuse(initialApps, {
@@ -93,7 +111,7 @@ export const useAppRegistry = () => {
     const app = getApp(id);
     if (app) {
       // Map app IDs to window types
-      const windowTypeMap: Record<string, "logs" | "kernel" | "terminal" | "fileExplorer" | "notes" | "music" | "jsonViewer"> = {
+      const windowTypeMap: Record<string, "logs" | "kernel" | "terminal" | "fileExplorer" | "notes" | "music" | "jsonViewer" | "vault" | "mira"> = {
         terminal: "terminal",
         logs: "logs", 
         kernel: "kernel",
@@ -101,6 +119,8 @@ export const useAppRegistry = () => {
         notes: "notes",
         music: "music",
         jsonViewer: "jsonViewer",
+        vault: "vault",
+        mira: "mira",
       };
       
       const windowType = windowTypeMap[id];

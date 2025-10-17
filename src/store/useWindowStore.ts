@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { MusicPlayerPayload, JsonViewerPayload, SystemAlertPayload } from "@/lib/windowPayloads";
 
-export type WindowType = "logs" | "kernel" | "terminal" | "fileExplorer" | "notes" | "music" | "jsonViewer" | "systemAlert";
+export type WindowType = "logs" | "kernel" | "terminal" | "fileExplorer" | "notes" | "music" | "jsonViewer" | "systemAlert" | "vault" | "mira";
 
 export type NotesAppPayload = {
 	id: string;
@@ -17,6 +17,8 @@ export type WindowPayloadMap = {
 	music: MusicPlayerPayload;
 	jsonViewer: JsonViewerPayload;
 	systemAlert: SystemAlertPayload;
+	vault: undefined;
+	mira: undefined;
 };
 
 export type WindowState<T extends WindowType = WindowType> = {
@@ -62,6 +64,8 @@ export const useWindowStore = create<Store>((set, get) => ({
 		music: { id: "music", visible: false, zIndex: 0, minimized: false, maximized: false },
 		jsonViewer: { id: "jsonViewer", visible: false, zIndex: 0, minimized: false, maximized: false },
 		systemAlert: { id: "systemAlert", visible: false, zIndex: 0, minimized: false, maximized: false },
+		vault: { id: "vault", visible: false, zIndex: 0, minimized: false, maximized: false },
+		mira: { id: "mira", visible: false, zIndex: 0, minimized: false, maximized: false },
 	},
 
 	openWindow: (id, payload) => {

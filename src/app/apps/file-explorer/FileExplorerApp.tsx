@@ -85,7 +85,7 @@ export const FileExplorerApp = () => {
 
 	const breadcrumbs = useMemo(() => {
 		const crumbs: FileSystemItem[] = [];
-		let cursor = allItems[currentDirectoryId];
+		let cursor: FileSystemItem | undefined = allItems[currentDirectoryId];
 		while (cursor) {
 			crumbs.unshift(cursor);
 			cursor = cursor.parentId ? allItems[cursor.parentId] : undefined;

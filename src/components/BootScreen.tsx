@@ -233,7 +233,7 @@ export const BootScreen = ({
 							/>
 						</div>
 						<div className="mt-4 h-36 overflow-hidden rounded-lg border border-cyan-400/30 bg-black/45 p-3 font-mono text-xs text-cyan-100/90">
-							<LogList lines={lines} reduced={prefersReducedMotion} />
+							<LogList lines={lines} reduced={prefersReducedMotion ?? false} />
 						</div>
 					</div>
 				</section>

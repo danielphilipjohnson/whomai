@@ -70,110 +70,223 @@ const playMenuSound = async () => {
 	}
 };
 
+const isDragEvent = (event: MouseEvent | PointerEvent | TouchEvent | DragEvent): event is DragEvent => {
+
+  return 'dataTransfer' in event;
+
+};
+
+
+
 export const MainPanel = ({
+
 	items,
+
 	selectedIds,
+
 	onSelect,
+
 	onOpen,
+
 	onRename,
+
 	onRenameCancel,
+
 	renameTargetId,
+
 	onDragStart,
+
 	onDragEnd,
+
 	onDropOnFolder,
+
 	onDropOnCurrent,
+
 	draggingId,
+
 	onContextAction,
+
 }: MainPanelProps) => {
+
 	const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
+
 	const [renameDraft, setRenameDraft] = useState('');
+
 	const [dropTargetId, setDropTargetId] = useState<string | null>(null);
 
+
+
 	useEffect(() => {
+
 		if (!renameTargetId) {
+
 			setRenameDraft('');
+
 			return;
+
 		}
+
 		const target = items.find((item) => item.id === renameTargetId);
+
 		if (target) {
+
 			setRenameDraft(target.name);
+
 		}
+
 	}, [renameTargetId, items]);
 
+
+
 	const handleClick = (event: ReactMouseEvent<HTMLDivElement>, item: FileSystemItem) => {
+
 		event.preventDefault();
+
 		if (event.detail === 2 && renameTargetId !== item.id) {
+
 			onOpen(item);
+
 			return;
+
 		}
+
 		if (event.metaKey || event.ctrlKey) {
+
 			onSelect([item.id], 'toggle');
+
 		} else {
+
 			onSelect([item.id], 'single');
+
 		}
+
 	};
+
+
 
 	const handleRenameSubmit = (item: FileSystemItem) => {
+
 		const trimmed = renameDraft.trim();
+
 		if (!trimmed) {
+
 			onRenameCancel();
+
 			return;
+
 		}
+
 		if (trimmed !== item.name) {
+
 			onRename(item.id, trimmed);
+
 		} else {
+
 			onRenameCancel();
+
 		}
+
 	};
+
+
 
 	const handleDropBackground = (event: React.DragEvent<HTMLDivElement>) => {
+
 		if (!draggingId) return;
+
 		event.preventDefault();
+
 		onDropOnCurrent();
+
 		setDropTargetId(null);
+
 		onDragEnd();
+
 	};
 
+
+
 	return (
+
 		<section
+
 			className="flex-1 overflow-hidden bg-[#05040d]/80"
+
 			onDragOver={(event) => {
+
 				if (draggingId) {
+
 					event.preventDefault();
+
 				}
+
 			}}
+
 			onDrop={handleDropBackground}
+
 		>
+
 			<div className="h-full overflow-auto p-4 custom-scrollbar">
+
 				<div className="grid grid-cols-[repeat(auto-fill,_minmax(120px,_1fr))] gap-4">
+
 					{items.map((item) => {
+
 						const isSelected = selectedSet.has(item.id);
+
 						const isRenaming = renameTargetId === item.id;
+
 						const isDropTarget = dropTargetId === item.id;
+
 		return (
+
 			<ContextMenu.Root key={item.id} onOpenChange={(open) => { if (open) { void playMenuSound(); } }}>
+
 				<ContextMenu.Trigger asChild>
+
 					<motion.div
+
 						className={clsx(
+
 						'group cursor-pointer rounded-lg border border-transparent bg-[#08071a]/60 p-3 text-center text-[11px] text-cyan-200 transition',
+
 						isSelected
+
 							? 'border-emerald-400/60 bg-[#0d1b1c]/80 text-emerald-200 shadow-[0_0_12px_rgba(0,255,200,0.3)]'
+
 							: 'hover:border-emerald-400/30 hover:bg-[#0a0919]/80 hover:text-emerald-100 hover:shadow-[0_0_10px_rgba(0,255,200,0.2)]',
+
 						isDropTarget && 'border-emerald-500/70 bg-[#11231f]/80'
+
 					)}
+
 						variants={itemVariants}
+
 						initial="hidden"
+
 						animate="visible"
+
 						draggable={!isRenaming}
-						onDragStart={(event) => {
+
+						onDragStart={(event: MouseEvent | PointerEvent | TouchEvent) => {
+
 									if (isRenaming) return;
+
 									onDragStart(item);
-									event.dataTransfer.clearData();
-									event.dataTransfer.setData('application/x-cyber-item', item.id);
-									event.dataTransfer.setData('text/plain', item.path);
-									event.dataTransfer.effectAllowed = 'move';
-								}}
-								onDragEnd={(event) => {
+
+									if (isDragEvent(event) && event.dataTransfer) {
+
+										event.dataTransfer.clearData();
+
+										event.dataTransfer.setData('application/x-cyber-item', item.id);
+
+										event.dataTransfer.setData('text/plain', item.path);
+
+										event.dataTransfer.effectAllowed = 'move';
+
+									}
+
+								}}								onDragEnd={(event) => {
 									event.preventDefault();
 									onDragEnd();
 									setDropTargetId(null);

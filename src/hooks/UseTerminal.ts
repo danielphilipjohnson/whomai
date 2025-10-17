@@ -1,7 +1,14 @@
 import { useState } from 'react';
 import { generateWhoAmIData } from "@/lib/generateWhoAmIData";
 import { notesRepository } from "@/lib/notesRepository";
+
 import { useWindowStore } from "@/store/useWindowStore";
+import { useSession } from '@/hooks/useSession';
+import { useThemeStore } from '@/store/useThemeStore';
+import { useAppRegistry } from '@/hooks/useAppRegistry';
+
+
+
 import { useFileSystemStore } from "@/store/useFileSystemStore";
 import { remark } from 'remark';
 import remarkHtml from 'remark-html';
@@ -20,14 +27,48 @@ interface WhoAmIData {
 }
 
 export const useTerminal = () => {
+
 	const [command, setCommand] = useState('');
+
 	const [history, setHistory] = useState<string[]>([
+
 		'Welcome to CyberOS v2.0.77',
+
 		'Type "whoami" to view system information',
+
 		'Type "help" for available commands'
+
 	]);
+
 	const [whoamiData, setWhoamiData] = useState<WhoAmIData | null>(null);
+
+	const [glitchEffect, setGlitchEffect] = useState(false);
+
 	const { openWindow, closeWindow } = useWindowStore();
+
+	const { launchApp, listApps } = useAppRegistry();
+
+
+
+	useEffect(() => {
+
+		if (glitchEffect) {
+
+			document.body.classList.add('glitch-effect');
+
+		} else {
+
+			document.body.classList.remove('glitch-effect');
+
+		}
+
+		return () => {
+
+			document.body.classList.remove('glitch-effect');
+
+		};
+
+	}, [glitchEffect]);
 
 	const handleCommand = async (input: string) => {
 		const fs = useFileSystemStore.getState();
@@ -276,7 +317,8 @@ export const useTerminal = () => {
 						'  whoami       - Display your browser information',
 						'  clear        - Clear the terminal',
 						'  pwd          - Print current directory',
-						'  ls [path]    - List directory contents',
+						'  list [path]  - List directory contents',
+						'  list apps    - List all available applications',
 						'  cd <path>    - Change directory',
 						'  mkdir <name> - Create a directory',
 						'  touch <name> - Create an empty file',
@@ -285,26 +327,37 @@ export const useTerminal = () => {
 						'  cat <file>   - Display file contents',
 						'  tree [path]  - ASCII tree view',
 						'  notes        - Notes app commands',
+						'  reboot       - Reboot the system',
+						'  theme <name> - Change the system theme (dark, neon, light)',
+						'  system info  - Display system information',
 						'  exit         - Close the terminal'
 					);
 					break;
 				case 'pwd':
 					output.push(cwd);
 					break;
-				case 'ls': {
-					const targetPath = args[0] ? resolvePath(args[0]) : cwd;
-					const directory = fs.getItemByPath(targetPath);
-					if (!directory || directory.type !== 'folder') {
-						output.push(`ls: no such directory: ${args[0] ?? targetPath}`);
-						break;
+				case 'list': {
+					if (args[0] === 'apps') {
+						const apps = listApps();
+						output.push('Available applications:');
+						apps.forEach(app => {
+							output.push(`  ${app.name}`);
+						});
+					} else {
+						const targetPath = args[0] ? resolvePath(args[0]) : cwd;
+						const directory = fs.getItemByPath(targetPath);
+						if (!directory || directory.type !== 'folder') {
+							output.push(`list: no such directory: ${args[0] ?? targetPath}`);
+							break;
+						}
+						const entries = fs.listDirectory(directory.id);
+						if (!entries.length) {
+							output.push('(empty)');
+							break;
+						}
+						const formatted = entries.map((entry) => (entry.type === 'folder' ? `${entry.name}/` : entry.name));
+						output.push(formatted.join('  '));
 					}
-					const entries = fs.listDirectory(directory.id);
-					if (!entries.length) {
-						output.push('(empty)');
-						break;
-					}
-					const formatted = entries.map((entry) => (entry.type === 'folder' ? `${entry.name}/` : entry.name));
-					output.push(formatted.join('  '));
 					break;
 				}
 				case 'cd': {
@@ -381,17 +434,49 @@ export const useTerminal = () => {
 				case 'open': {
 					const target = args[0];
 					if (!target) {
-						output.push('Usage: open <file>');
+						output.push('Usage: open <app_name> or open <file>');
 						break;
 					}
-					const fullPath = resolvePath(target);
-					const file = fs.getItemByPath(fullPath);
-					if (!file || file.type !== 'file') {
-						output.push(`open: file not found: ${target}`);
-						break;
+
+					const app = listApps().find(app => app.name.toLowerCase() === target.toLowerCase());
+
+					if (app) {
+						launchApp(app.id);
+						output.push(`Opened ${app.name}`);
+					} else {
+						const fullPath = resolvePath(target);
+						const file = fs.getItemByPath(fullPath);
+						if (!file || file.type !== 'file') {
+							output.push(`open: file not found: ${target}`);
+							break;
+						}
+						openFile(file);
+						output.push(`Opened ${file.name}`);
 					}
-					openFile(file);
-					output.push(`Opened ${file.name}`);
+					break;
+				}
+				case 'list': {
+					if (args[0] === 'apps') {
+						const apps = listApps();
+						output.push('Available applications:');
+						apps.forEach(app => {
+							output.push(`  ${app.name}`);
+						});
+					} else {
+						const targetPath = args[0] ? resolvePath(args[0]) : cwd;
+						const directory = fs.getItemByPath(targetPath);
+						if (!directory || directory.type !== 'folder') {
+							output.push(`ls: no such directory: ${args[0] ?? targetPath}`);
+							break;
+						}
+						const entries = fs.listDirectory(directory.id);
+						if (!entries.length) {
+							output.push('(empty)');
+							break;
+						}
+						const formatted = entries.map((entry) => (entry.type === 'folder' ? `${entry.name}/` : entry.name));
+						output.push(formatted.join('  '));
+					}
 					break;
 				}
 				case 'cat': {
@@ -432,6 +517,64 @@ export const useTerminal = () => {
 					output.push(...buildTree(root.id));
 					break;
 				}
+				case 'reboot':
+					output.push('Rebooting system...');
+					setTimeout(() => {
+						useSession.getState().logout();
+					}, 1000);
+					break;
+				case 'theme': {
+					const themeName = args[0];
+					if (!themeName) {
+						output.push('Usage: theme <name>');
+						output.push('Available themes: dark, neon, light');
+						break;
+					}
+					if (['dark', 'neon', 'light'].includes(themeName)) {
+						useThemeStore.getState().setTheme(themeName);
+						output.push(`Theme changed to ${themeName}`);
+					} else {
+						output.push(`Theme not found: ${themeName}`);
+					}
+					break;
+				}
+				case 'system': {
+					if (args[0] === 'info') {
+						const uptime = Math.floor(process.uptime());
+						const memoryUsage = Math.floor(Math.random() * (80 - 40) + 40);
+						output.push('System Information:');
+						output.push(`  OS Version: CyberOS v2.0.77`);
+						output.push(`  Uptime: ${uptime} seconds`);
+						output.push(`  Memory Usage: ${memoryUsage}%`);
+					} else {
+						output.push(`Unknown system command: ${args[0]}`);
+					}
+					break;
+				}
+				case 'unlock': {
+					if (args[0] === 'vault') {
+						launchApp('vault');
+						output.push('Vault unlocked.');
+					} else {
+						output.push(`Unknown unlock command: ${args[0]}`);
+					}
+					break;
+				}
+				case 'mira.connect': {
+					launchApp('mira');
+					output.push('Connecting to MIRA...');
+					break;
+				}
+				case 'sudo': {
+					if (input === 'sudo echo "Wake up, Daniel."') {
+						setGlitchEffect(true);
+						output.push('>>> Initiating system override... Wake up, Daniel.');
+						setTimeout(() => setGlitchEffect(false), 1000);
+					} else {
+						output.push(`sudo: command not found: ${args.join(' ')}`);
+					}
+					break;
+				}
 				case 'exit':
 					closeWindow('terminal');
 					output.push('Closing terminal...');
@@ -452,6 +595,7 @@ export const useTerminal = () => {
 		setCommand,
 		history,
 		whoamiData,
+		glitchEffect,
 		handleCommand,
 	};
 };

@@ -13,6 +13,8 @@ import WindowFrame from "./windows/WindowFrame";
 import MusicPlayer from './windows/MusicPlayer';
 import JsonViewer from './windows/JsonViewer';
 import SystemAlert from './windows/SystemAlert';
+import Vault from './windows/Vault';
+import Mira from './windows/Mira';
 
 const CyberpunkDesktop = () => {
 	const { windows, openWindow, closeWindow, bringToFront, minimizeWindow, maximizeWindow, toggleStartMenu } = useWindowStore();
@@ -24,6 +26,8 @@ const CyberpunkDesktop = () => {
 	const fileExplorerAppMeta = getApp("explorer");
 	const musicAppMeta = getApp("music");
 	const jsonViewerMeta = getApp("jsonViewer");
+	const vaultAppMeta = getApp("vault");
+	const miraAppMeta = getApp("mira");
 
 
 	const handleNotesChange = () => {
@@ -142,6 +146,32 @@ const CyberpunkDesktop = () => {
 						title="System Alert"
 					>
 						<SystemAlert payload={windows.systemAlert.payload} />
+					</WindowFrame>
+				)}
+
+				{vaultAppMeta && windows.vault.visible && (
+					<WindowFrame
+						windowState={windows.vault}
+						onClose={() => closeWindow("vault")}
+						onMinimize={() => minimizeWindow("vault")}
+						onMaximize={() => maximizeWindow("vault")}
+						onBringToFront={() => bringToFront("vault")}
+						title={vaultAppMeta.name}
+					>
+						<Vault />
+					</WindowFrame>
+				)}
+
+				{miraAppMeta && windows.mira.visible && (
+					<WindowFrame
+						windowState={windows.mira}
+						onClose={() => closeWindow("mira")}
+						onMinimize={() => minimizeWindow("mira")}
+						onMaximize={() => maximizeWindow("mira")}
+						onBringToFront={() => bringToFront("mira")}
+						title={miraAppMeta.name}
+					>
+						<Mira />
 					</WindowFrame>
 				)}
 			</div>

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { FileSystemItem } from '@/lib/fileSystemTypes';
 import clsx from 'clsx';
 
@@ -30,7 +30,7 @@ const iconForResult = (item: FileSystemItem) => {
 const highlight = (text: string, query: string) => {
 	if (!query) return text;
 	const regex = new RegExp(escapeRegExp(query), 'ig');
-	const segments: Array<string | JSX.Element> = [];
+	const segments: Array<string | React.ReactElement> = [];
 	let lastIndex = 0;
 	let match: RegExpExecArray | null;
 	while ((match = regex.exec(text)) !== null) {

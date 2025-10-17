@@ -236,3 +236,33 @@ export const DataSvg = (
 		</g>
 	</svg>
 );
+
+export const LockSvg = (
+	<svg className="w-24 h-24" width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+		<rect width="64" height="64" rx="8" fill="#0a0a0a" />
+		<rect x="2" y="2" width="60" height="60" rx="8" stroke="#00ffe0" strokeWidth="1.5" />
+		<rect x="20" y="28" width="24" height="18" rx="2" fill="#0f0f10" stroke="#33ff99" strokeWidth="1.5" />
+		<path d="M24 28v-6a8 8 0 0 1 16 0v6" stroke="#33ff99" strokeWidth="1.5" strokeLinecap="round" />
+		<circle cx="32" cy="37" r="2" fill="#33ff99" />
+		<g opacity="0.3" stroke="#00ffe0" strokeDasharray="2 2">
+			<path d="M10 2v60" />
+			<path d="M54 2v60" />
+		</g>
+	</svg>
+);
+
+export const MiraSvg = (
+	<svg className="w-24 h-24" width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+		<rect width="64" height="64" rx="8" fill="#0a0a0a" />
+		<rect x="2" y="2" width="60" height="60" rx="8" stroke="#BC13FE" strokeWidth="1.5" />
+		<circle cx="32" cy="24" r="10" fill="#1a0a1a" stroke="#FF073A" strokeWidth="2" />
+		<path d="M32 34c-6 0-10 4-10 8s4 8 10 8 10-4 10-8-4-8-10-8z" fill="#1a0a1a" stroke="#BC13FE" strokeWidth="2" />
+		<circle cx="28" cy="22" r="1.5" fill="#BC13FE" />
+		<circle cx="36" cy="22" r="1.5" fill="#BC13FE" />
+		<path d="M28 30c2 2 4 2 6 0" stroke="#FF073A" strokeWidth="1.5" strokeLinecap="round" />
+		<g opacity="0.3" stroke="#BC13FE" strokeDasharray="2 2">
+			<path d="M10 2v60" />
+			<path d="M54 2v60" />
+		</g>
+	</svg>
+);
