@@ -14,6 +14,17 @@ import PropertiesPanel from './components/PropertiesPanel';
 import { notesRepository } from '@/lib/notesRepository';
 import { useWindowStore } from '@/store/useWindowStore';
 
+const ensureMarkdownName = (name: string) => {
+	const trimmed = name.trim();
+	if (!trimmed) return 'untitled.md';
+	if (/\.md$/i.test(trimmed)) {
+		return trimmed.replace(/\.md$/i, '.md');
+	}
+	const withoutExt = trimmed.replace(/\.[^./\\]+$/, '');
+	const base = withoutExt.trim() || 'untitled';
+	return `${base}.md`;
+};
+
 const containerVariants = {
 	hidden: { opacity: 0, y: 12, scale: 0.98 },
 	visible: { opacity: 1, y: 0, scale: 1 },
@@ -172,7 +183,7 @@ export const FileExplorerApp = () => {
 
 	const handleCreate = useCallback((type: 'file' | 'folder') => {
 		try {
-			const defaultName = type === 'file' ? 'untitled.txt' : 'New Folder';
+			const defaultName = type === 'file' ? ensureMarkdownName('untitled') : 'New Folder';
 			const newItem = createItemInCurrent(defaultName, type);
 			setSelection([newItem.id], 'single');
 			setRenameTargetId(newItem.id);
@@ -197,13 +208,15 @@ export const FileExplorerApp = () => {
 
 	const handleRenameCommit = useCallback((id: string, nextName: string) => {
 		try {
-			renameItem(id, nextName);
+			const target = allItems[id];
+			const finalName = target?.type === 'file' ? ensureMarkdownName(nextName) : nextName;
+			renameItem(id, finalName);
 		} catch (error) {
 			console.error('Rename failed', error);
 		} finally {
 			setRenameTargetId(null);
 		}
-	}, [renameItem]);
+	}, [allItems, renameItem]);
 
 	const handleMove = useCallback((id: string, destinationId: string) => {
 		try {
