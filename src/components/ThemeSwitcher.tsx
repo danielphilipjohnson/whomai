@@ -1,0 +1,68 @@
+"use client";
+
+import Image from "next/image";
+import { backgroundOptions, ThemeKey } from "@/lib/backgrounds";
+import { useThemeStore } from "@/store/useThemeStore";
+
+interface ThemeSwitcherProps {
+  onSelect?: () => void;
+}
+
+export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ onSelect }) => {
+  const storeTheme = useThemeStore((state) => state.theme);
+  const setTheme = useThemeStore((state) => state.setTheme);
+  const theme: ThemeKey = backgroundOptions.some(({ key }) => key === storeTheme)
+    ? (storeTheme as ThemeKey)
+    : "dark";
+
+  const handleSelect = (key: ThemeKey) => {
+    setTheme(key);
+    onSelect?.();
+  };
+
+  return (
+    <div className="mt-6">
+      <div className="flex items-center justify-between text-sm text-gray-300">
+        <h2 className="uppercase tracking-[0.3em] text-xs text-gray-400">Environments</h2>
+        <span className="text-[10px] uppercase text-gray-500">{theme} mode</span>
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-3">
+        {backgroundOptions.map(({ key, name, image, description }) => {
+          const selected = theme === key;
+          return (
+            <button
+              key={key}
+              onClick={() => handleSelect(key)}
+              className={`group relative overflow-hidden rounded-lg border text-left transition ${
+                selected
+                  ? "border-neon-blue shadow-[0_0_18px_rgba(0,240,255,0.3)]"
+                  : "border-gray-700 hover:border-neon-purple/70"
+              }`}
+            >
+              <div className="relative h-20 w-full">
+                <Image
+                  src={image}
+                  alt={`${name} background`}
+                  fill
+                  sizes="120px"
+                  className="object-cover transition duration-200 group-hover:scale-105"
+                  priority={false}
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-black/10 to-black/60" />
+                {selected && (
+                  <span className="absolute right-2 top-2 rounded-full border border-neon-blue bg-black/70 px-2 py-0.5 text-[10px] uppercase tracking-wide text-neon-blue">
+                    Active
+                  </span>
+                )}
+              </div>
+              <div className="p-2">
+                <p className="text-xs font-semibold text-gray-100">{name}</p>
+                <p className="mt-1 text-[10px] text-gray-400">{description}</p>
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+};

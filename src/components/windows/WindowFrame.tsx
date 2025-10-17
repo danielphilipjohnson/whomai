@@ -69,7 +69,7 @@ const WindowFrame: React.FC<WindowFrameProps> = ({
           minWidth={300}
           minHeight={200}
           enable={!windowState.maximized ? { top: true, right: true, bottom: true, left: true, topRight: true, bottomRight: true, bottomLeft: true, topLeft: true } : {}}
-          className="w-full h-full"
+          className="flex h-full w-full flex-col"
         >
           <div className="window-header flex justify-between items-center p-2 bg-gray-800 border-b border-neon-blue cursor-grab">
             <span className="text-neon-green font-bold">{title}</span>
@@ -85,7 +85,7 @@ const WindowFrame: React.FC<WindowFrameProps> = ({
               </button>
             </div>
           </div>
-          <div className="window-content flex-1 h-full overflow-hidden">
+          <div className="window-content flex flex-1 flex-col overflow-hidden">
             {children}
           </div>
         </Resizable>

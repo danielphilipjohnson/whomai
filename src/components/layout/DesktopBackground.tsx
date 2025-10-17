@@ -1,31 +1,11 @@
 'use client'
 import React from 'react';
 import { useThemeStore } from '@/store/useThemeStore';
-
-const backgrounds = {
-  dark: {
-    id: 1,
-    name: 'Cyberpunk City',
-    image: '/background-image/background-1.jpg',
-    gradient: 'from-purple-900/60 to-blue-900/60'
-  },
-  neon: {
-    id: 2,
-    name: 'Neon Grid',
-    image: '/background-image/background-2.webp',
-    gradient: 'from-cyan-900/60 to-purple-900/60'
-  },
-  light: {
-    id: 3,
-    name: 'Digital Rain',
-    image: '/background-image/background-3.jpg',
-    gradient: 'from-green-900/60 to-blue-900/60'
-  }
-};
+import { backgrounds, ThemeKey } from '@/lib/backgrounds';
 
 const DesktopBackground = () => {
   const theme = useThemeStore((state) => state.theme);
-  const currentBackground = backgrounds[theme as keyof typeof backgrounds] || backgrounds.dark;
+  const currentBackground = backgrounds[(theme as ThemeKey) ?? 'dark'] || backgrounds.dark;
 
   return (
     <div className="absolute inset-0">

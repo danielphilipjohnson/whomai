@@ -15,11 +15,19 @@ import {
 import { LogOut, RefreshCw, Settings2, SunMoon, User2 } from "lucide-react";
 import { useBootSequence } from "@/hooks/useBootSequence";
 import { useSession } from "@/hooks/useSession";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
 export const Topbar = () => {
   const currentTime = useClock();
   const { beginBoot } = useBootSequence();
   const { user, logout } = useSession();
+  const [themeDialogOpen, setThemeDialogOpen] = React.useState(false);
 
   const timeString = format(currentTime, "HH:mm");
   const dateString = format(currentTime, "EEE, MMM d");
@@ -50,7 +58,8 @@ export const Topbar = () => {
   }, [logout]);
 
   return (
-    <div className="z-20 flex h-12 items-center justify-between border-b border-cyan-400 bg-black/80 px-4 font-mono text-xs tracking-wide text-cyan-300 shadow-[0_0_6px_#00fff7] backdrop-blur-md md:h-8">
+    <>
+      <div className="z-20 flex h-12 items-center justify-between border-b border-cyan-400 bg-black/80 px-4 font-mono text-xs tracking-wide text-cyan-300 shadow-[0_0_6px_#00fff7] backdrop-blur-md md:h-8">
       <div className="flex items-center md:space-x-3">
         <span className="text-green-400 opacity-60">[VOID-OS v2.0.77]</span>
         <span className="animate-pulse text-pink-400">:: ACTIVE</span>
@@ -83,13 +92,30 @@ export const Topbar = () => {
         {identity.isGuest ? (
           <GuestBadge label={identity.name} />
         ) : (
-          <AccountDropdown user={identity} onReboot={handleReboot} onLogout={handleLogout} />
+          <AccountDropdown
+            user={identity}
+            onReboot={handleReboot}
+            onLogout={handleLogout}
+            onOpenThemeSwitcher={() => setThemeDialogOpen(true)}
+          />
         )}
         <div className="text-right">
           {timeString} <span className="hidden md:inline">• {dateString}</span>
         </div>
       </div>
-    </div>
+      </div>
+
+      <Dialog open={themeDialogOpen} onOpenChange={setThemeDialogOpen}>
+        <DialogContent className="max-w-2xl border border-neon-purple/40 bg-black/90 shadow-[0_0_35px_rgba(188,19,254,0.35)]">
+          <DialogHeader>
+            <DialogTitle className="text-sm uppercase tracking-[0.35em] text-neon-purple">
+              Select Environment
+            </DialogTitle>
+          </DialogHeader>
+          <ThemeSwitcher onSelect={() => setThemeDialogOpen(false)} />
+        </DialogContent>
+      </Dialog>
+    </>
   );
 };
 
@@ -103,9 +129,10 @@ type AccountDropdownProps = {
   user: UserSummary;
   onReboot: () => void;
   onLogout: () => void;
+  onOpenThemeSwitcher: () => void;
 };
 
-const AccountDropdown = ({ user, onReboot, onLogout }: AccountDropdownProps) => (
+const AccountDropdown = ({ user, onReboot, onLogout, onOpenThemeSwitcher }: AccountDropdownProps) => (
   <DropdownMenu>
     <DropdownMenuTrigger asChild>
       <button
@@ -127,10 +154,15 @@ const AccountDropdown = ({ user, onReboot, onLogout }: AccountDropdownProps) => 
         </div>
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
-      <DropdownMenuItem disabled className="cursor-not-allowed opacity-40">
+      <DropdownMenuItem
+        onSelect={(event) => {
+          event.preventDefault();
+          onOpenThemeSwitcher();
+        }}
+      >
         <SunMoon className="h-3.5 w-3.5" />
         Theme Switcher
-        <DropdownMenuShortcut>coming soon</DropdownMenuShortcut>
+        <DropdownMenuShortcut>⌘T</DropdownMenuShortcut>
       </DropdownMenuItem>
       <DropdownMenuItem
         onSelect={(event) => {

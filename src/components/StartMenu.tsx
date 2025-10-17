@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { StartMenuAppTile } from "./StartMenuAppTile";
 import { usePinnedAppsStore } from "@/store/usePinnedAppsStore";
 import { useRecentAppsStore } from "@/store/useRecentAppsStore";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 
 export function StartMenu() {
   const { startMenuOpen, setStartMenuOpen } = useWindowStore();
@@ -92,6 +93,7 @@ export function StartMenu() {
               ))}
             </motion.div>
           </div>
+          <ThemeSwitcher />
         </motion.div>
       </DialogContent>
     </Dialog>
