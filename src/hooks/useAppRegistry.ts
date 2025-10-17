@@ -5,7 +5,7 @@ import { NotesAppPayload, useWindowStore } from "@/store/useWindowStore";
 import { useRecentAppsStore } from "@/store/useRecentAppsStore";
 import Fuse from "fuse.js";
 import { useCallback, useState } from "react";
-import { TerminalSvg, LogSvg, KernelSvg, FileExplorerSvg, NotesSvg, MusicSvg, DataSvg, LockSvg, MiraSvg } from "@/lib/svgIcons";
+import { TerminalSvg, LogSvg, KernelSvg, FileExplorerSvg, NotesSvg, MusicSvg, DataSvg, LockSvg, MiraSvg, MonitorSvg } from "@/lib/svgIcons";
 
 const initialApps: AppMeta[] = [
   {
@@ -31,6 +31,14 @@ const initialApps: AppMeta[] = [
     category: "System",
     keywords: ["kernel", "system", "info"],
     icon: KernelSvg,
+  },
+  {
+    id: "monitor",
+    name: "System Monitor",
+    description: "Inspect active windows and resource load.",
+    category: "System",
+    keywords: ["monitor", "resources", "cpu", "memory"],
+    icon: MonitorSvg,
   },
   {
     id: "notes",
@@ -111,12 +119,13 @@ export const useAppRegistry = () => {
     const app = getApp(id);
     if (app) {
       // Map app IDs to window types
-      const windowTypeMap: Record<string, "logs" | "kernel" | "terminal" | "fileExplorer" | "notes" | "music" | "jsonViewer" | "vault" | "mira"> = {
+      const windowTypeMap: Record<string, "logs" | "kernel" | "terminal" | "fileExplorer" | "notes" | "music" | "jsonViewer" | "vault" | "mira" | "monitor"> = {
         terminal: "terminal",
         logs: "logs", 
         kernel: "kernel",
         explorer: "fileExplorer",
         notes: "notes",
+        monitor: "monitor",
         music: "music",
         jsonViewer: "jsonViewer",
         vault: "vault",

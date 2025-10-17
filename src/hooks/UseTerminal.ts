@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { generateWhoAmIData } from "@/lib/generateWhoAmIData";
 import { notesRepository } from "@/lib/notesRepository";
 
@@ -432,22 +432,32 @@ export const useTerminal = () => {
 					break;
 				}
 				case 'open': {
-					const target = args[0];
-					if (!target) {
+					const targetRaw = args.join(' ').trim();
+					if (!targetRaw) {
 						output.push('Usage: open <app_name> or open <file>');
 						break;
 					}
 
-					const app = listApps().find(app => app.name.toLowerCase() === target.toLowerCase());
+				const normalizedTarget = targetRaw.toLowerCase();
+				const compactTarget = normalizedTarget.replace(/\s+/g, '');
+				const app = listApps().find((app) => {
+					const appName = app.name.toLowerCase();
+					const appId = app.id.toLowerCase();
+					return (
+						appName === normalizedTarget ||
+						appId === normalizedTarget ||
+						appName.replace(/\s+/g, '') === compactTarget
+					);
+				});
 
 					if (app) {
 						launchApp(app.id);
 						output.push(`Opened ${app.name}`);
 					} else {
-						const fullPath = resolvePath(target);
+						const fullPath = resolvePath(targetRaw);
 						const file = fs.getItemByPath(fullPath);
 						if (!file || file.type !== 'file') {
-							output.push(`open: file not found: ${target}`);
+							output.push(`open: file not found: ${targetRaw}`);
 							break;
 						}
 						openFile(file);

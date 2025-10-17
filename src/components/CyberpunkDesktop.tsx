@@ -15,6 +15,7 @@ import JsonViewer from './windows/JsonViewer';
 import SystemAlert from './windows/SystemAlert';
 import Vault from './windows/Vault';
 import Mira from './windows/Mira';
+import SystemMonitor from './windows/SystemMonitor';
 
 const CyberpunkDesktop = () => {
 	const { windows, openWindow, closeWindow, bringToFront, minimizeWindow, maximizeWindow, toggleStartMenu } = useWindowStore();
@@ -28,6 +29,7 @@ const CyberpunkDesktop = () => {
 	const jsonViewerMeta = getApp("jsonViewer");
 	const vaultAppMeta = getApp("vault");
 	const miraAppMeta = getApp("mira");
+	const monitorAppMeta = getApp("monitor");
 
 
 	const handleNotesChange = () => {
@@ -133,6 +135,19 @@ const CyberpunkDesktop = () => {
 						title={kernelAppMeta.name}
 					>
 						<Kernel />
+					</WindowFrame>
+				)}
+
+				{monitorAppMeta && windows.monitor.visible && (
+					<WindowFrame
+						windowState={windows.monitor}
+						onClose={() => closeWindow("monitor")}
+						onMinimize={() => minimizeWindow("monitor")}
+						onMaximize={() => maximizeWindow("monitor")}
+						onBringToFront={() => bringToFront("monitor")}
+						title={monitorAppMeta.name}
+					>
+						<SystemMonitor />
 					</WindowFrame>
 				)}
 

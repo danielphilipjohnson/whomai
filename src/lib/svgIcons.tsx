@@ -237,6 +237,25 @@ export const DataSvg = (
 	</svg>
 );
 
+export const MonitorSvg = (
+	<svg className="w-24 h-24" width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
+		<rect width="64" height="64" rx="8" fill="#08070f" />
+		<rect x="2" y="2" width="60" height="60" rx="8" stroke="#34f5ff" strokeWidth="1.5" />
+		<rect x="10" y="14" width="44" height="28" rx="4" fill="#05040a" stroke="#34f5ff" strokeWidth="1.5" />
+		<path d="M16 34c6-6 10-6 16 0s10 6 16 0" stroke="#39ff14" strokeWidth="1.6" strokeLinecap="round" />
+		<path d="M16 26h8l4-6 4 10h8" stroke="#7b5bff" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+		<circle cx="22" cy="40" r="3" fill="#39ff14" />
+		<circle cx="32" cy="40" r="3" fill="#34f5ff" />
+		<circle cx="42" cy="40" r="3" fill="#ff3df5" />
+		<rect x="24" y="46" width="16" height="6" rx="2" fill="#05040a" stroke="#34f5ff" strokeWidth="1.2" />
+		<path d="M20 52h24" stroke="#34f5ff" strokeWidth="1.5" strokeLinecap="round" />
+		<g opacity="0.3" stroke="#34f5ff" strokeDasharray="2 2">
+			<path d="M10 6v52" />
+			<path d="M54 6v52" />
+		</g>
+	</svg>
+);
+
 export const LockSvg = (
 	<svg className="w-24 h-24" width="96" height="96" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="none">
 		<rect width="64" height="64" rx="8" fill="#0a0a0a" />
