@@ -26,25 +26,25 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ onSelect }) => {
         <h2 className="uppercase tracking-[0.3em] text-xs text-gray-400">Environments</h2>
         <span className="text-[10px] uppercase text-gray-500">{theme} mode</span>
       </div>
-      <div className="mt-3 grid grid-cols-3 gap-3">
+      <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
         {backgroundOptions.map(({ key, name, image, description }) => {
           const selected = theme === key;
           return (
             <button
               key={key}
               onClick={() => handleSelect(key)}
-              className={`group relative overflow-hidden rounded-lg border text-left transition ${
+              className={`group relative overflow-hidden rounded-lg border text-left transition sm:h-full ${
                 selected
                   ? "border-neon-blue shadow-[0_0_18px_rgba(0,240,255,0.3)]"
                   : "border-gray-700 hover:border-neon-purple/70"
               }`}
             >
-              <div className="relative h-20 w-full">
+              <div className="relative h-24 w-full sm:h-20">
                 <Image
                   src={image}
                   alt={`${name} background`}
                   fill
-                  sizes="120px"
+                  sizes="(min-width: 640px) 120px, 200px"
                   className="object-cover transition duration-200 group-hover:scale-105"
                   priority={false}
                 />

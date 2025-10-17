@@ -106,8 +106,8 @@ export const Topbar = () => {
       </div>
 
       <Dialog open={themeDialogOpen} onOpenChange={setThemeDialogOpen}>
-        <DialogContent className="max-w-2xl border border-neon-purple/40 bg-black/90 shadow-[0_0_35px_rgba(188,19,254,0.35)]">
-          <DialogHeader>
+        <DialogContent className="w-[min(92vw,620px)] max-h-[85vh] overflow-y-auto border border-neon-purple/40 bg-black/90 shadow-[0_0_35px_rgba(188,19,254,0.35)] sm:p-6 p-4">
+          <DialogHeader className="hidden sm:block">
             <DialogTitle className="text-sm uppercase tracking-[0.35em] text-neon-purple">
               Select Environment
             </DialogTitle>
@@ -155,8 +155,7 @@ const AccountDropdown = ({ user, onReboot, onLogout, onOpenThemeSwitcher }: Acco
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuItem
-        onSelect={(event) => {
-          event.preventDefault();
+        onSelect={() => {
           onOpenThemeSwitcher();
         }}
       >
@@ -165,8 +164,7 @@ const AccountDropdown = ({ user, onReboot, onLogout, onOpenThemeSwitcher }: Acco
         <DropdownMenuShortcut>⌘T</DropdownMenuShortcut>
       </DropdownMenuItem>
       <DropdownMenuItem
-        onSelect={(event) => {
-          event.preventDefault();
+        onSelect={() => {
           onReboot();
         }}
       >
@@ -174,8 +172,7 @@ const AccountDropdown = ({ user, onReboot, onLogout, onOpenThemeSwitcher }: Acco
         Reboot System
       </DropdownMenuItem>
       <DropdownMenuItem
-        onSelect={(event) => {
-          event.preventDefault();
+        onSelect={() => {
           onLogout();
         }}
       >
