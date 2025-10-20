@@ -344,7 +344,7 @@ export const useFileSystemStore = createBoundStore<FileSystemStore>((set, get) =
 
 	isInTrash: (id: string) => {
 		const { items, trashId } = get();
-		let cursor = items[id];
+		let cursor: FileSystemItem | undefined = items[id];
 		while (cursor) {
 			if (cursor.parentId === trashId) return true;
 			cursor = cursor.parentId ? items[cursor.parentId] : undefined;

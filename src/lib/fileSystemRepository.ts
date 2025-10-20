@@ -248,7 +248,7 @@ class FileSystemRepository {
 	}
 
 	private ensureNotDescendant(targetId: string, potentialParentId: string) {
-		let current = this.snapshot.items[potentialParentId];
+		let current: FileSystemItem | undefined = this.snapshot.items[potentialParentId];
 		while (current) {
 			if (current.id === targetId) {
 				throw new Error('Cannot move folder into its own descendant');
@@ -326,7 +326,7 @@ class FileSystemRepository {
 		return this.createItem({ type, name, parentPath: path });
 	}
 
-	deleteItem(id: string, { soft = true }: { soft?: boolean } = { soft: true }) {
+	deleteItem(id: string, { soft = true }: { soft?: boolean } = { soft: true }): void {
 		const item = this.snapshot.items[id];
 		if (!item) throw new Error(`Item not found: ${id}`);
 

@@ -229,7 +229,7 @@ export const JsonViewer = ({ payload }: JsonViewerProps) => {
                 <p className="mt-1 text-red-200/90">{parseState.error}</p>
               </div>
             ) : (
-              <TreeNode value={parseState.data} path="$" depth={0} expanded={expanded} toggle={handleToggle} />
+              <TreeNode value={parseState.data} path="$" expanded={expanded} toggle={handleToggle} />
             )}
           </div>
         </section>

@@ -75,6 +75,16 @@ export const useTerminal = () => {
 		const cwd = fs.currentPath || '/';
 		const promptPath = cwd === '/' ? '~' : cwd;
 		const trimmed = input.trim();
+		const normalizePath = (raw: string) => {
+			if (!raw) return '/';
+			const replaced = raw.replace(/\\/g, '/');
+			const withLeading = replaced.startsWith('/') ? replaced : `/${replaced}`;
+			return withLeading.replace(/\/+/g, '/');
+		};
+		const findItemByPath = (raw: string) => {
+			const normalized = normalizePath(raw);
+			return Object.values(fs.items).find((item) => item.path === normalized);
+		};
 		const baseHistory = [...history, `guest@cybercity:${promptPath}$ ${input}`];
 		const [cmdRaw, ...args] = trimmed.split(/\s+/);
 		const cmd = cmdRaw.toLowerCase();
@@ -345,7 +355,7 @@ export const useTerminal = () => {
 						});
 					} else {
 						const targetPath = args[0] ? resolvePath(args[0]) : cwd;
-						const directory = fs.getItemByPath(targetPath);
+						const directory = findItemByPath(targetPath);
 						if (!directory || directory.type !== 'folder') {
 							output.push(`list: no such directory: ${args[0] ?? targetPath}`);
 							break;
@@ -362,7 +372,7 @@ export const useTerminal = () => {
 				}
 				case 'cd': {
 					const target = resolvePath(args[0] ?? '/');
-					const destination = fs.getItemByPath(target);
+					const destination = findItemByPath(target);
 					if (!destination || destination.type !== 'folder') {
 						output.push(`cd: no such directory: ${args[0] ?? target}`);
 						break;
@@ -391,7 +401,7 @@ export const useTerminal = () => {
 						output.push('Usage: touch <name>');
 						break;
 					}
-					const currentDir = fs.getItemByPath(cwd);
+					const currentDir = findItemByPath(cwd);
 					if (!currentDir || currentDir.type !== 'folder') {
 						output.push('touch: current directory invalid');
 						break;
@@ -415,7 +425,7 @@ export const useTerminal = () => {
 						output.push('Usage: rm <name>');
 						break;
 					}
-					const currentDir = fs.getItemByPath(cwd);
+					const currentDir = findItemByPath(cwd);
 					if (!currentDir || currentDir.type !== 'folder') {
 						output.push('rm: current directory invalid');
 						break;
@@ -454,8 +464,8 @@ export const useTerminal = () => {
 						launchApp(app.id);
 						output.push(`Opened ${app.name}`);
 					} else {
-						const fullPath = resolvePath(targetRaw);
-						const file = fs.getItemByPath(fullPath);
+				const fullPath = resolvePath(targetRaw);
+					const file = findItemByPath(fullPath);
 						if (!file || file.type !== 'file') {
 							output.push(`open: file not found: ${targetRaw}`);
 							break;
@@ -473,8 +483,8 @@ export const useTerminal = () => {
 							output.push(`  ${app.name}`);
 						});
 					} else {
-						const targetPath = args[0] ? resolvePath(args[0]) : cwd;
-						const directory = fs.getItemByPath(targetPath);
+					const targetPath = args[0] ? resolvePath(args[0]) : cwd;
+					const directory = findItemByPath(targetPath);
 						if (!directory || directory.type !== 'folder') {
 							output.push(`ls: no such directory: ${args[0] ?? targetPath}`);
 							break;
@@ -496,7 +506,7 @@ export const useTerminal = () => {
 						break;
 					}
 					const fullPath = resolvePath(target);
-					const file = fs.getItemByPath(fullPath);
+					const file = findItemByPath(fullPath);
 					if (!file || file.type !== 'file') {
 						output.push(`cat: file not found: ${target}`);
 						break;
@@ -507,7 +517,7 @@ export const useTerminal = () => {
 				}
 				case 'tree': {
 					const startPath = args[0] ? resolvePath(args[0]) : cwd;
-					const root = fs.getItemByPath(startPath);
+					const root = findItemByPath(startPath);
 					if (!root || root.type !== 'folder') {
 						output.push(`tree: no such directory: ${args[0] ?? startPath}`);
 						break;

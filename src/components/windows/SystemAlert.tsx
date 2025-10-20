@@ -6,17 +6,16 @@ interface SystemAlertProps {
 	payload?: SystemAlertPayload;
 }
 
-const severityStyles: Record<SystemAlertPayload['severity'] | undefined, string> = {
+const severityStyles: Record<NonNullable<SystemAlertPayload['severity']>, string> = {
 	error: 'border-rose-500/70 text-rose-200',
 	warning: 'border-amber-400/70 text-amber-200',
 	info: 'border-emerald-400/70 text-emerald-200',
-	undefined: 'border-rose-500/60 text-rose-200',
 };
 
 export const SystemAlert = ({ payload }: SystemAlertProps) => {
 	const message = payload?.message ?? 'System access denied.';
 	const title = payload?.title ?? 'ACCESS DENIED';
-	const severity = payload?.severity;
+	const severity = payload?.severity ?? 'error';
 
 	return (
 		<div className="h-full bg-[#0d0313] text-[11px] font-mono flex flex-col">
