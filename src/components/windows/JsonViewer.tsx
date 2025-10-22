@@ -245,7 +245,7 @@ export const JsonViewer = ({ payload }: JsonViewerProps) => {
           </div>
         </section>
 
-        <section className="flex min-h-[14rem] flex-1 flex-col bg-[#050211]/70">
+        <section className="flex min-h-[14rem] flex-1 flex-col bg-dark-primary/70">
           <div className="flex items-center gap-2 border-b border-cyan-900/40 px-3 py-2">
             <button
               type="button"

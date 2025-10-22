@@ -40,7 +40,10 @@ vi.mock('@/components/apps/notes/MarkdownPreview', () => ({
 
 vi.mock('@/components/apps/notes/NotesSidebar', () => ({
   __esModule: true,
-  default: ({ onCreateNewNote, onSelectNote }: {
+  default: ({
+    onCreateNewNote,
+    onSelectNote,
+  }: {
     onCreateNewNote: () => void;
     onSelectNote: (id: string) => void;
   }) => (
@@ -52,7 +55,12 @@ vi.mock('@/components/apps/notes/NotesSidebar', () => ({
 }));
 
 vi.mock('@/store/useFileSystemStore', () => ({
-  useFileSystemStore: (selector: (state: { getItemById: typeof getItemByIdMock; readFile: typeof readFileMock }) => unknown) => {
+  useFileSystemStore: (
+    selector: (state: {
+      getItemById: typeof getItemByIdMock;
+      readFile: typeof readFileMock;
+    }) => unknown
+  ) => {
     const state = {
       getItemById: getItemByIdMock,
       readFile: readFileMock,
@@ -118,7 +126,9 @@ describe('NotesApp workspace', () => {
     onNoteChange.mockClear();
     updateSpy.mockClear();
 
-    const shortcut = [...shortcutRegistry].reverse().find((entry) => entry.key === 's' && entry.metaKey);
+    const shortcut = [...shortcutRegistry]
+      .reverse()
+      .find((entry) => entry.key === 's' && entry.metaKey);
     expect(shortcut).toBeDefined();
     act(() => {
       shortcut?.callback();

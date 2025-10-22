@@ -22,7 +22,7 @@ interface ToolbarProps {
 }
 
 const buttonBase =
-  'flex items-center gap-2 rounded-md border border-[#1f1c3b] bg-[#0b0a16]/80 px-3 py-1 text-emerald-200 transition hover:border-emerald-400/60 hover:text-emerald-100 hover:shadow-[0_0_12px_rgba(0,255,200,0.25)] focus:outline-none focus:ring-2 focus:ring-emerald-400/70 disabled:opacity-40 disabled:hover:border-[#1f1c3b] disabled:hover:text-emerald-200 disabled:cursor-not-allowed';
+  'flex items-center gap-2 rounded-md border border-[#1f1c3b] bg-bg-dark-3/80 px-3 py-1 text-emerald-200 transition hover:border-emerald-400/60 hover:text-emerald-100 hover:shadow-[0_0_12px_rgba(0,255,200,0.25)] focus:outline-none focus:ring-2 focus:ring-emerald-400/70 disabled:opacity-40 disabled:hover:border-[#1f1c3b] disabled:hover:text-emerald-200 disabled:cursor-not-allowed';
 
 export const Toolbar = ({
   currentPath,

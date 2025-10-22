@@ -64,7 +64,7 @@ export function StartMenu() {
           <input
             type="text"
             placeholder="Search apps..."
-            className="w-full rounded-lg border border-cyan-500/30 bg-[#0b0a16] p-2 text-white focus:ring-2 focus:ring-cyan-400 focus:outline-none"
+            className="w-full rounded-lg border border-cyan-500/30 bg-bg-dark-3 p-2 text-white focus:ring-2 focus:ring-cyan-400 focus:outline-none"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             autoFocus
