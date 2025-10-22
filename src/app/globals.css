@@ -67,10 +67,56 @@
 }
 
 @theme inline {
+  /* existing */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  /* bridge your vars into Tailwind colour tokens */
+  --color-neon-aqua-low-opacity: var(--neon-aqua-low-opacity);
+  --color-neon-blue:   var(--neon-blue);
+  --color-neon-green:  var(--neon-green);
+  --color-neon-purple: var(--neon-purple);
+  --color-neon-red:    var(--neon-red);
+
+  --color-progress-background: var(--progress-background);
+  --color-toolbar-background:  var(--toolbar-background);
+
+  --color-bg-dark-1: var(--bg-dark-1);
+  --color-bg-dark-2: var(--bg-dark-2);
+  --color-bg-dark-3: var(--bg-dark-3);
+  --color-bg-dark-4: var(--bg-dark-4);
+
+  --color-bg-dark-1-60: var(--bg-dark-1-60);
+  --color-bg-dark-1-80: var(--bg-dark-1-80);
+  --color-bg-dark-1-90: var(--bg-dark-1-90);
+  --color-bg-dark-2-60: var(--bg-dark-2-60);
+  --color-bg-dark-2-80: var(--bg-dark-2-80);
+  --color-bg-dark-2-90: var(--bg-dark-2-90);
+  --color-bg-dark-3-60: var(--bg-dark-3-60);
+  --color-bg-dark-3-80: var(--bg-dark-3-80);
+  --color-bg-dark-3-90: var(--bg-dark-3-90);
+  --color-bg-dark-4-60: var(--bg-dark-4-60);
+  --color-bg-dark-4-80: var(--bg-dark-4-80);
+  --color-bg-dark-4-90: var(--bg-dark-4-90);
+
+  --color-bg-dark-emerald:      var(--bg-dark-emerald);
+  --color-bg-dark-emerald-60:   var(--bg-dark-emerald-60);
+  --color-bg-dark-purple:       var(--bg-dark-purple);
+  --color-bg-dark-blue-grey:    var(--bg-dark-blue-grey);
+  --color-bg-dark-blue-grey-80: var(--bg-dark-blue-grey-80);
+
+  --color-dark-primary:     var(--dark-primary);
+  --color-dark-secondary:   var(--dark-secondary);
+  --color-dark-tertiary:    var(--dark-tertiary);
+  --color-dark-primary-80:  var(--dark-primary-80);
+  --color-dark-primary-95:  var(--dark-primary-95);
+  --color-dark-secondary-80:var(--dark-secondary-80);
+  --color-dark-tertiary-70: var(--dark-tertiary-70);
+
+  --color-toolbar:     var(--toolbar);
+  --color-sidebar:     var(--sidebar);
+  --color-bg-sidebar-80: var(--bg-sidebar-80);
+  --color-active-item: var(--active-item);
 }
 
 @media (prefers-color-scheme: dark) {
