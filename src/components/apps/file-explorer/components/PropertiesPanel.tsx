@@ -24,7 +24,7 @@ export const PropertiesPanel = ({ item, onClose }: PropertiesPanelProps) => {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 24 }}
-          className="pointer-events-auto absolute right-4 bottom-4 w-72 rounded-lg border border-emerald-500/40 bg-[#05040d]/95 p-4 text-[11px] text-emerald-100 shadow-[0_0_18px_rgba(0,255,200,0.25)]"
+          className="pointer-events-auto absolute right-4 bottom-4 w-72 rounded-lg border border-emerald-500/40 bg-dark-primary/95 p-4 text-[11px] text-emerald-100 shadow-[0_0_18px_rgba(0,255,200,0.25)]"
         >
           <div className="flex items-center justify-between">
             <div className="text-xs font-semibold tracking-[0.2em] text-emerald-200 uppercase">

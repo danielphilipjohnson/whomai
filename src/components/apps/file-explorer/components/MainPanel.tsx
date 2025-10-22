@@ -172,7 +172,7 @@ export const MainPanel = ({
 
   return (
     <section
-      className="flex-1 overflow-hidden bg-[#05040d]/80"
+      className="flex-1 overflow-hidden bg-dark-primary/80"
       onDragOver={(event) => {
         if (draggingId) {
           event.preventDefault();
@@ -280,7 +280,7 @@ export const MainPanel = ({
                             onRenameCancel();
                           }
                         }}
-                        className="w-full rounded border border-emerald-500/50 bg-[#05040d] px-2 py-1 text-center text-[11px] text-emerald-100 focus:border-emerald-400 focus:outline-none"
+                        className="w-full rounded border border-emerald-500/50 bg-dark-primary px-2 py-1 text-center text-[11px] text-emerald-100 focus:border-emerald-400 focus:outline-none"
                       />
                     ) : (
                       <>

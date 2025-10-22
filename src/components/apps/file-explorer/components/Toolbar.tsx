@@ -50,7 +50,7 @@ export const Toolbar = ({
   }, [selectedIds]);
 
   return (
-    <div className="flex items-center justify-between border-b border-[#15142a] bg-[#080712]/90 px-4 py-2">
+    <div className="flex items-center justify-between border-b border-[#15142a] bg-toolbar/90 px-4 py-2">
       <motion.div
         className="flex items-center gap-3"
         initial={{ opacity: 0, x: -8 }}

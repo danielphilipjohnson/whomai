@@ -20,7 +20,7 @@ interface TreeNode {
 }
 
 const containerClasses =
-  'w-60 bg-[#070614]/80 text-[11px] overflow-y-auto custom-scrollbar shadow-[inset_-2px_0_12px_rgba(0,0,0,0.25)]';
+  'w-60 bg-sidebar/80 text-[11px] overflow-y-auto custom-scrollbar shadow-[inset_-2px_0_12px_rgba(0,0,0,0.25)]';
 
 const iconForFolder = (item: FileSystemItem) => {
   switch (item.name.toLowerCase()) {
@@ -99,7 +99,7 @@ export const Sidebar = ({ expandedIds, onToggle, onOpen, onDrop, draggingId }: S
               ? 'bg-[rgba(0,255,170,0.12)] text-emerald-300 shadow-[inset_0_0_8px_rgba(0,255,200,0.12)]'
               : 'hover:bg-[#101026] hover:text-emerald-200',
             isDropTarget
-              ? 'border border-emerald-500/60 bg-[#102020]/60'
+              ? 'border border-emerald-500/60 bg-active-item/60'
               : 'border border-transparent'
           )}
           style={{ paddingLeft: 12 + depth * 12 }}
@@ -190,7 +190,7 @@ export const Sidebar = ({ expandedIds, onToggle, onOpen, onDrop, draggingId }: S
               ? 'bg-[rgba(0,255,170,0.12)] text-emerald-300 shadow-[inset_0_0_8px_rgba(0,255,200,0.12)]'
               : 'hover:bg-[#101026] hover:text-emerald-200',
             isRootDropTarget
-              ? 'border border-emerald-500/60 bg-[#102020]/60'
+              ? 'border border-emerald-500/60 bg-active-item/60'
               : 'border border-transparent'
           )}
         >

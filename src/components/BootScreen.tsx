@@ -273,8 +273,6 @@ export const BootScreen = ({
           className="hidden"
         />
       )}
-
-
     </div>
   );
 };

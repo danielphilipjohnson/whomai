@@ -52,7 +52,7 @@ export const MusicPlayer = ({ payload }: MusicPlayerProps) => {
 
   return (
     <div
-      className="flex h-full flex-col bg-[#05040d] font-mono text-xs text-emerald-200"
+      className="flex h-full flex-col bg-dark-primary font-mono text-xs text-emerald-200"
       onDragOver={(event) => event.preventDefault()}
       onDrop={handleDrop}
     >

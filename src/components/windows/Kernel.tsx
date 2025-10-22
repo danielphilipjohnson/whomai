@@ -57,7 +57,7 @@ const Kernel = () => {
   }, []);
 
   return (
-    <div className="flex h-full flex-col rounded-md border-2 border-lime-400 bg-[#0a0a0a] font-mono text-xs text-lime-300 shadow-[0_0_20px_rgba(0,255,128,0.4)]">
+    <div className="flex h-full flex-col rounded-md border-2 border-lime-400 bg-dark-secondary font-mono text-xs text-lime-300 shadow-[0_0_20px_rgba(0,255,128,0.4)]">
       <div className="flex-1 space-y-5 overflow-auto p-5 md:p-2">
         <SystemInfo uptime={uptime} />
         <KernelPrompt />

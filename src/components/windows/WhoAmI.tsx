@@ -14,7 +14,7 @@ export const WhoAmI = () => {
 
   return (
     <div
-      className="relative flex h-full flex-col overflow-hidden bg-[#0d0221] font-mono text-cyan-400"
+      className="relative flex h-full flex-col overflow-hidden bg-dark-tertiary font-mono text-cyan-400"
       style={{ clipPath: 'polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%)' }}
     >
       {/* Terminal Content */}
