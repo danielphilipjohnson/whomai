@@ -18,7 +18,7 @@ export const SystemAlert = ({ payload }: SystemAlertProps) => {
   const severity = payload?.severity ?? 'error';
 
   return (
-    <div className="flex h-full flex-col bg-[#0d0313] font-mono text-[11px]">
+    <div className="flex h-full flex-col bg-bg-dark-purple font-mono text-[11px]">
       <motion.div
         className={clsx(
           'mx-6 mt-6 rounded-lg border px-4 py-3 shadow-[0_0_18px_rgba(255,64,128,0.35)]',

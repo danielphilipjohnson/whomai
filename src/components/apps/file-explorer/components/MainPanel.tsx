@@ -201,11 +201,11 @@ export const MainPanel = ({
                 <ContextMenu.Trigger asChild>
                   <motion.div
                     className={clsx(
-                      'group cursor-pointer rounded-lg border border-transparent bg-[#08071a]/60 p-3 text-center text-[11px] text-cyan-200 transition',
+                      'group cursor-pointer rounded-lg border border-transparent bg-bg-dark-2/60 p-3 text-center text-[11px] text-cyan-200 transition',
 
                       isSelected
                         ? 'border-emerald-400/60 bg-[#0d1b1c]/80 text-emerald-200 shadow-[0_0_12px_rgba(0,255,200,0.3)]'
-                        : 'hover:border-emerald-400/30 hover:bg-[#0a0919]/80 hover:text-emerald-100 hover:shadow-[0_0_10px_rgba(0,255,200,0.2)]',
+                        : 'hover:border-emerald-400/30 hover:bg-dark-secondary/80 hover:text-emerald-100 hover:shadow-[0_0_10px_rgba(0,255,200,0.2)]',
 
                       isDropTarget && 'border-emerald-500/70 bg-[#11231f]/80'
                     )}
@@ -297,7 +297,7 @@ export const MainPanel = ({
                   </motion.div>
                 </ContextMenu.Trigger>
                 <ContextMenu.Portal>
-                  <ContextMenu.Content className="min-w-[160px] rounded-md border border-emerald-500/40 bg-[#040312]/95 p-1 text-[11px] text-emerald-100 shadow-[0_0_18px_rgba(0,255,200,0.25)] backdrop-blur-sm">
+                  <ContextMenu.Content className="min-w-[160px] rounded-md border border-emerald-500/40 bg-dark-primary/95 p-1 text-[11px] text-emerald-100 shadow-[0_0_18px_rgba(0,255,200,0.25)] backdrop-blur-sm">
                     <ContextMenu.Item
                       onSelect={(event) => {
                         event.preventDefault();
@@ -349,7 +349,7 @@ export const MainPanel = ({
             );
           })}
           {items.length === 0 && (
-            <div className="col-span-full flex h-40 flex-col items-center justify-center rounded-lg border border-dashed border-[#1c1a33] bg-[#060513]/70 text-[11px] text-[#34325a]">
+            <div className="col-span-full flex h-40 flex-col items-center justify-center rounded-lg border border-dashed border-[#1c1a33] bg-dark-primary/70 text-[11px] text-[#34325a]">
               <div className="mb-1 text-cyan-300/60">Directory Empty</div>
               <div className="text-[10px]">Use the toolbar to create files or folders</div>
             </div>

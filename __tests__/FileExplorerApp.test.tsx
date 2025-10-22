@@ -101,13 +101,14 @@ vi.mock('framer-motion', () => ({
 }));
 
 vi.mock('@/store/useWindowStore', () => ({
-  useWindowStore: (selector: (state: { openWindow: typeof openWindowMock }) => unknown) => selector({ openWindow: openWindowMock }),
+  useWindowStore: (selector: (state: { openWindow: typeof openWindowMock }) => unknown) =>
+    selector({ openWindow: openWindowMock }),
 }));
 
 vi.mock('@/store/useFileSystemStore', () => ({
   useFileSystemStore: (
     selector: (state: typeof fileSystemState) => unknown,
-    _equalityFn?: unknown,
+    _equalityFn?: unknown
   ) => selector(fileSystemState),
 }));
 
@@ -177,10 +178,13 @@ describe('FileExplorerApp window/file-system sync', () => {
     expect(notes[0].title).toBe('note');
     expect(notes[0].content).toBe(fileContent);
 
-    expect(openWindowMock).toHaveBeenCalledWith('notes', expect.objectContaining({
-      id: notes[0].id,
-      title: 'note',
-    }));
+    expect(openWindowMock).toHaveBeenCalledWith(
+      'notes',
+      expect.objectContaining({
+        id: notes[0].id,
+        title: 'note',
+      })
+    );
   });
 
   it('shows an alert for unsupported file types without mutating notes', async () => {
@@ -202,9 +206,12 @@ describe('FileExplorerApp window/file-system sync', () => {
     await user.click(screen.getByText('open-log.txt'));
 
     expect(notesRepository.getAllNotes()).toHaveLength(0);
-    expect(openWindowMock).toHaveBeenCalledWith('systemAlert', expect.objectContaining({
-      severity: 'warning',
-    }));
+    expect(openWindowMock).toHaveBeenCalledWith(
+      'systemAlert',
+      expect.objectContaining({
+        severity: 'warning',
+      })
+    );
   });
 
   it('surfaces read failures via system alert', async () => {
@@ -218,8 +225,11 @@ describe('FileExplorerApp window/file-system sync', () => {
 
     await user.click(screen.getByText('open-note.md'));
 
-    expect(openWindowMock).toHaveBeenCalledWith('systemAlert', expect.objectContaining({
-      severity: 'error',
-    }));
+    expect(openWindowMock).toHaveBeenCalledWith(
+      'systemAlert',
+      expect.objectContaining({
+        severity: 'error',
+      })
+    );
   });
 });

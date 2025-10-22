@@ -13,7 +13,7 @@ const Logs = () => {
 
   return (
     <div
-      className="relative flex h-full flex-col bg-[#0c0c1a]"
+      className="relative flex h-full flex-col bg-bg-dark-4"
       style={{ clipPath: 'polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 0 100%)' }}
     >
       <div className="relative flex-1 overflow-y-auto p-4 font-mono text-sm text-green-300">

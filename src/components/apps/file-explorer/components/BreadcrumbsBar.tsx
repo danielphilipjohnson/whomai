@@ -11,7 +11,7 @@ interface BreadcrumbsBarProps {
 export const BreadcrumbsBar = ({ breadcrumbs, onNavigate }: BreadcrumbsBarProps) => {
   return (
     <motion.nav
-      className="flex items-center gap-1 border-b border-[#15142a] bg-[#070715]/80 px-4 py-2"
+      className="flex items-center gap-1 border-b border-[#15142a] bg-bg-dark-2/80 px-4 py-2"
       initial={{ opacity: 0, y: -6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: 'easeOut' }}

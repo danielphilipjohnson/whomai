@@ -138,7 +138,7 @@ const VaultWindow = () => {
     value ? `${value.slice(0, 2).toUpperCase()}${'•'.repeat(Math.max(value.length - 2, 0))}` : '';
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-[#04020a] font-mono text-[11px] text-cyan-200">
+    <div className="flex h-full min-h-0 flex-col bg-bg-dark-1 font-mono text-[11px] text-cyan-200">
       <header className="border-neon-green/40 border-b bg-gradient-to-r from-black/80 via-black/60 to-black/80 px-5 py-4">
         <div className="flex items-start justify-between gap-4">
           <div>

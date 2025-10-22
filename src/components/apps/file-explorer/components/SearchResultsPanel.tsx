@@ -68,7 +68,7 @@ export const SearchResultsPanel = ({
   return (
     <section className="flex-1 overflow-hidden bg-dark-primary/80">
       <div className="custom-scrollbar h-full overflow-auto">
-        <div className="border-b border-[#13122a] bg-[#08071a]/80 px-4 py-2 text-[11px] text-cyan-300">
+        <div className="border-b border-[#13122a] bg-bg-dark-2/80 px-4 py-2 text-[11px] text-cyan-300">
           {summary}
         </div>
         <ul className="divide-y divide-[#15142a]">
