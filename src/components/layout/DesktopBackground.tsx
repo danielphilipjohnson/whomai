@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import { useThemeStore } from '@/store/useThemeStore';
 import { backgrounds, ThemeKey } from '@/lib/backgrounds';
 
