@@ -125,7 +125,7 @@ const SystemMonitor = () => {
             </div>
             <div className="bg-process-background mt-2 h-2 rounded-full">
               <div
-                className="from-neon-purple via-neon-blue to-neon-green h-full rounded-full bg-gradient-to-r"
+                className="h-full rounded-full bg-gradient-to-r from-[var(--neon-purple)] via-[var(--neon-blue)] to-[var(--neon-green)]"
                 style={{ width: `${metrics.cpuLoad}%` }}
               />
             </div>
@@ -139,7 +139,7 @@ const SystemMonitor = () => {
             </div>
             <div className="bg-process-background mt-2 h-2 rounded-full">
               <div
-                className="from-neon-green via-neon-blue to-neon-purple h-full rounded-full bg-gradient-to-r"
+                className="h-full rounded-full bg-gradient-to-r from-[var(--neon-green)] via-[var(--neon-blue)] to-[var(--neon-purple)]"
                 style={{ width: `${metrics.memoryUsagePct}%` }}
               />
             </div>
