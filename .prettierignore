@@ -1,0 +1,32 @@
+# Ignore artifacts:
+.next
+build
+dist
+
+# Ignore development-related files:
+node_modules
+.env
+.env.local
+.env.development.local
+.env.production.local
+
+# Ignore logs:
+*.log
+
+# Ignore generated files:
+*.tsbuildinfo
+
+# Ignore package manager files:
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore editor/IDE files:
+.vscode
+.idea
+
+# Ignore test coverage:
+coverage
+
+# Ignore public assets that are not code:
+public

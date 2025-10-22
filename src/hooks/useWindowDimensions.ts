@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 interface WindowDimensions {
   width: number;
@@ -18,8 +18,7 @@ export const useWindowDimensions = ({
   defaultHeight = 400,
   padding = 32,
 }: UseWindowDimensionsOptions = {}): WindowDimensions => {
-
-  const calculateDimensions = (): WindowDimensions => {
+  const calculateDimensions = useCallback((): WindowDimensions => {
     if (typeof window === 'undefined') {
       return { width: defaultWidth, height: defaultHeight, x: 0, y: 0 };
     }
@@ -34,7 +33,7 @@ export const useWindowDimensions = ({
     const y = (window.innerHeight - height) / 2;
 
     return { width, height, x, y };
-  };
+  }, [defaultWidth, defaultHeight, padding]);
 
   const [dimensions, setDimensions] = useState<WindowDimensions>(calculateDimensions);
 
@@ -47,7 +46,7 @@ export const useWindowDimensions = ({
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [defaultWidth, defaultHeight, padding]);
+  }, [calculateDimensions]);
 
   return dimensions;
 };

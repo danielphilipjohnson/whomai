@@ -1,185 +1,114 @@
-import { useTerminal } from "@/hooks/UseTerminal";
-import { useTerminalBehavior } from "@/hooks/useTerminalBehavior";
-import { motion } from "framer-motion";
+import { useTerminal } from '@/hooks/UseTerminal';
+import { useTerminalBehavior } from '@/hooks/useTerminalBehavior';
+import { useFileSystemStore } from '@/store/useFileSystemStore';
+import { useRef } from 'react';
 
-import { AnimatePresence } from "framer-motion";
-import {  useRef, useState } from "react";
+export const WhoAmI = () => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const terminalContentRef = useRef<HTMLDivElement>(null);
+  const { command, setCommand, history, whoamiData, handleCommand } = useTerminal();
+  const currentPath = useFileSystemStore((state) => state.currentPath);
+  const promptPath = currentPath === '/' ? '~' : currentPath;
 
+  useTerminalBehavior(true, inputRef, terminalContentRef); // Always show terminal when rendered inside WindowFrame
 
-export const WhoAmI = ({ onClose, showTerminal, onMinimize, onMaximize }: { 
-	onClose: () => void, 
-	showTerminal: boolean, 
-	setShowTerminal: (show: boolean) => void,
-	onMinimize: () => void,
-	onMaximize: () => void
-}) => {
+  return (
+    <div
+      className="relative flex h-full flex-col overflow-hidden bg-dark-tertiary font-mono text-cyan-400"
+      style={{ clipPath: 'polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%)' }}
+    >
+      {/* Terminal Content */}
+      <div
+        ref={terminalContentRef}
+        className="relative flex-1 overflow-y-auto pt-3 pl-4 font-mono text-cyan-400 md:p-3"
+      >
+        {/* Scanlines effect */}
+        <div
+          className="pointer-events-none absolute inset-0 z-10 opacity-10"
+          style={{
+            backgroundImage: 'linear-gradient(transparent 50%, rgba(0, 0, 0, 0.1) 50%)',
+            backgroundSize: '100% 4px',
+          }}
+        ></div>
 
+        {/* Animated scan line */}
+        <div
+          className="absolute top-0 right-0 left-0 z-10 h-1 bg-cyan-400 opacity-20"
+          style={{
+            animation: 'scanline 5s linear infinite',
+          }}
+        ></div>
+        {/* Command history */}
+        {history?.map((line: string, index: number) => (
+          <div key={`history-${index}`} className="mb-2">
+            {line}
+          </div>
+        ))}
 
-	const [isMaximized, setIsMaximized] = useState(false);
+        {/* WHOAMI Response Data Display */}
+        {whoamiData && (
+          <div className="mt-4 border-l-2 border-lime-400 pl-3">
+            <div className="mb-4 text-pink-500">=== USER IDENTITY SCAN COMPLETE ===</div>
 
-	const inputRef = useRef<HTMLInputElement>(null);
-	const terminalContentRef = useRef<HTMLDivElement>(null);
-	const {
-		command,
-		setCommand,
-		history,
-		whoamiData,
-		handleCommand
-	} = useTerminal();
-	
-	useTerminalBehavior(showTerminal, inputRef, terminalContentRef);
+            <div className="mb-2 flex">
+              <div className="mr-4 w-40 text-lime-400">IP ADDRESS</div>
+              <div className="text-white">{whoamiData.ipaddress}</div>
+            </div>
 
-	const handleMaximize = () => {
-		setIsMaximized(!isMaximized);
-		onMaximize();
-	};
+            <div className="mb-2 flex">
+              <div className="mr-4 w-40 text-lime-400">OPERATING SYSTEM</div>
+              <div className="text-white">{whoamiData.os || 'Unknown'}</div>
+            </div>
 
+            <div className="mb-2 flex">
+              <div className="mr-4 w-40 text-lime-400">BROWSER</div>
+              <div className="text-white">
+                {whoamiData.browser_name || 'Unknown'} {whoamiData.browser_version || ''}
+              </div>
+            </div>
 
-	return (
-		<AnimatePresence>
-			<div className="flex items-center justify-center w-full h-full">
-				<motion.div
-					initial={{ opacity: 0, scale: 0.8 }}
-					animate={{ opacity: 1, scale: 1 }}
-					exit={{ opacity: 0, scale: 0.8 }}
-					transition={{ type: "spring", stiffness: 300, damping: 30 }}
-					className={`${isMaximized ? 'mx-auto max-w-3xl' : 'w-full h-full'}`}
-				>
-					{/* Terminal Window */}
-					<div
-						className={`bg-[#0d0221] border-2 border-cyan-400 shadow-[0_0_20px_rgba(5,217,232,0.5)] h-full overflow-hidden flex flex-col relative ${isMaximized ? 'h-screen' : ''}`}
-						style={{ clipPath: "polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 0 100%)" }}
-					>
-						{/* Terminal Header */}
-						<div className="h-8 bg-[#16213e] flex items-center justify-between px-3 border-b border-cyan-400">
-							<div className="text-cyan-400 font-mono text-sm uppercase tracking-wider">
-								CyberTerminal v2.0.42
-							</div>
-							<div className="flex gap-1.5">
-								<div 
-									className="w-3 h-3 rounded-full bg-yellow-400 cursor-pointer hover:bg-yellow-300 transition-colors"
-									onClick={onMinimize}
-									aria-label="Minimize terminal"
-								></div>
-								<div 
-									className="w-3 h-3 rounded-full bg-green-400 cursor-pointer hover:bg-green-300 transition-colors"
-									onClick={handleMaximize}
-									aria-label="Maximize terminal"
-								></div>
-								<div
-									className="w-3 h-3 rounded-full bg-pink-500 cursor-pointer hover:bg-pink-400 transition-colors"
-									onClick={onClose}
-									aria-label="Close terminal"
-								></div>
-							</div>
-						</div>
+            <div className="mb-2 flex">
+              <div className="mr-4 w-40 text-lime-400">LANGUAGE</div>
+              <div className="text-white">{whoamiData.parsed_language || 'Unknown'}</div>
+            </div>
 
-						{/* Terminal Content */}
-						<div
-							ref={terminalContentRef}
-							className={`flex-1 pl-4 pt-3 md:p-3 font-mono text-cyan-400 overflow-y-auto relative ${isMaximized ? 'h-[calc(100vh-2rem)]' : 'h-96 max-h-96'}`}
-						>
-							{/* Scanlines effect */}
-							<div
-								className="absolute inset-0 pointer-events-none z-10 opacity-10"
-								style={{
-									backgroundImage: "linear-gradient(transparent 50%, rgba(0, 0, 0, 0.1) 50%)",
-									backgroundSize: "100% 4px"
-								}}
-							></div>
+            <div className="mb-2 flex">
+              <div className="mr-4 w-40 text-lime-400">USER AGENT</div>
+              <div className="text-xs text-white">{whoamiData.software || 'Unknown'}</div>
+            </div>
 
-							{/* Animated scan line */}
-							<div
-								className="absolute top-0 left-0 right-0 h-1 bg-cyan-400 opacity-20 z-10"
-								style={{
-									animation: "scanline 5s linear infinite"
-								}}
-							></div>
-							{/* Command history */}
-							{history?.map((line: string, index: number) => (
-								<div key={`history-${index}`} className="mb-2">
-									{line}
-								</div>
-							))}
+            <div className="mb-2 flex">
+              <div className="mr-4 w-40 text-lime-400">SYSTEM ACCESS</div>
+              <div className="text-white">Request #{whoamiData.total_requests}</div>
+            </div>
+          </div>
+        )}
 
-							{/* WHOAMI Response Data Display */}
-							{whoamiData && (
-								<div className="mt-4 pl-3 border-l-2 border-lime-400">
-									<div className="text-pink-500 mb-4">
-										=== USER IDENTITY SCAN COMPLETE ===
-									</div>
-
-									<div className="mb-2 flex">
-										<div className="w-40 text-lime-400 mr-4">IP ADDRESS</div>
-										<div className="text-white">
-											{whoamiData.ipaddress}
-										</div>
-									</div>
-
-									<div className="mb-2 flex">
-										<div className="w-40 text-lime-400 mr-4">OPERATING SYSTEM</div>
-										<div className="text-white">
-											{whoamiData.os || 'Unknown'}
-										</div>
-									</div>
-
-									<div className="mb-2 flex">
-										<div className="w-40 text-lime-400 mr-4">BROWSER</div>
-										<div className="text-white">
-											{whoamiData.browser_name || 'Unknown'} {whoamiData.browser_version || ''}
-										</div>
-									</div>
-
-									<div className="mb-2 flex">
-										<div className="w-40 text-lime-400 mr-4">LANGUAGE</div>
-										<div className="text-white">
-											{whoamiData.parsed_language || 'Unknown'}
-										</div>
-									</div>
-
-									<div className="mb-2 flex">
-										<div className="w-40 text-lime-400 mr-4">USER AGENT</div>
-										<div className="text-white text-xs">
-											{whoamiData.software || 'Unknown'}
-										</div>
-									</div>
-
-									<div className="mb-2 flex">
-										<div className="w-40 text-lime-400 mr-4">SYSTEM ACCESS</div>
-										<div className="text-white">
-											Request #{whoamiData.total_requests}
-										</div>
-									</div>
-								</div>
-							)}
-
-							{/* Command input field */}
-							<form onSubmit={(e) => {
-								e.preventDefault();
-								handleCommand(command);
-							}} className="flex items-center">
-								<span className="text-lime-400 mr-1">guest@cybercity:~$</span>
-								<input
-									ref={inputRef}
-									type="text"
-									value={command}
-									onChange={(e) => setCommand(e.target.value)}
-									className="flex-1 bg-transparent border-none outline-none text-white caret-pink-500 max-w-42"
-									autoComplete="off"
-									spellCheck="false"
-									aria-label="Terminal command input"
-									placeholder="Enter command..."
-								/>
-								{!command && (
-									<div className="w-2 h-4 bg-pink-500 animate-blink ml-0.5"></div>
-								)}
-							</form>
-						</div>
-					</div>
-				</motion.div>
-			</div>
-		</AnimatePresence>
-	);
+        {/* Command input field */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleCommand(command);
+          }}
+          className="flex items-center"
+        >
+          <span className="mr-1 text-lime-400">{`guest@cybercity:${promptPath}$`}</span>
+          <input
+            ref={inputRef}
+            type="text"
+            value={command}
+            onChange={(e) => setCommand(e.target.value)}
+            className="max-w-42 flex-1 border-none bg-transparent text-white caret-pink-500 outline-none"
+            autoComplete="off"
+            spellCheck="false"
+            aria-label="Terminal command input"
+            placeholder="Enter command..."
+          />
+          {!command && <div className="animate-blink ml-0.5 h-4 w-2 bg-pink-500"></div>}
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default WhoAmI;
