@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import React from 'react';
 import { useThemeStore } from '@/store/useThemeStore';
 import { backgrounds, ThemeKey } from '@/lib/backgrounds';
@@ -13,13 +13,11 @@ const DesktopBackground = () => {
         className="absolute inset-0 transition-opacity duration-500"
         style={{
           backgroundImage: `url('${currentBackground.image}')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center"
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
         }}
       >
-        <div
-          className={`absolute inset-0 bg-gradient-to-br ${currentBackground.gradient}`}
-        />
+        <div className={`absolute inset-0 bg-gradient-to-br ${currentBackground.gradient}`} />
       </div>
     </div>
   );

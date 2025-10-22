@@ -13,7 +13,10 @@ export const useRecentAppsStore = create<RecentAppsState>()(
       recentApps: [],
       addRecentApp: (appId) => {
         set((state) => {
-          const newRecentApps = [appId, ...state.recentApps.filter((id) => id !== appId)].slice(0, 5);
+          const newRecentApps = [appId, ...state.recentApps.filter((id) => id !== appId)].slice(
+            0,
+            5
+          );
           return { recentApps: newRecentApps };
         });
       },

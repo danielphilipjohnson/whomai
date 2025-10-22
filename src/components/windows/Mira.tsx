@@ -1,7 +1,7 @@
 import React from 'react';
 import MiraWindow from './MiraWindow';
 
-const Mira: React.FC = () => {
+const Mira = () => {
   return <MiraWindow />;
 };
 

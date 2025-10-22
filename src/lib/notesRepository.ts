@@ -112,11 +112,11 @@ class NotesRepository {
   }
 
   getArchivedNotes(): Note[] {
-    return this.notes.filter(note => note.archived);
+    return this.notes.filter((note) => note.archived);
   }
 
   getUnarchivedNotes(): Note[] {
-    return this.notes.filter(note => !note.archived);
+    return this.notes.filter((note) => !note.archived);
   }
 
   getNoteById(id: string): Note | undefined {

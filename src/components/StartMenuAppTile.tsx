@@ -9,7 +9,7 @@ interface StartMenuAppTileProps {
   onClick: (appId: string) => void;
 }
 
-export const StartMenuAppTile: React.FC<StartMenuAppTileProps> = ({ app, onClick }) => {
+export const StartMenuAppTile = ({ app, onClick }: StartMenuAppTileProps) => {
   const { pinnedApps, pinApp, unpinApp } = usePinnedAppsStore();
   const isPinned = pinnedApps.includes(app.id);
 
@@ -25,8 +25,8 @@ export const StartMenuAppTile: React.FC<StartMenuAppTileProps> = ({ app, onClick
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center p-2 rounded-lg cursor-pointer transition-colors duration-200",
-        "hover:bg-cyan-700/30 hover:shadow-[0_0_10px_rgba(5,217,232,0.3)]"
+        'flex cursor-pointer flex-col items-center justify-center rounded-lg p-2 transition-colors duration-200',
+        'hover:bg-cyan-700/30 hover:shadow-[0_0_10px_rgba(5,217,232,0.3)]'
       )}
       onClick={() => onClick(app.id)}
       onContextMenu={(e) => {
@@ -36,14 +36,14 @@ export const StartMenuAppTile: React.FC<StartMenuAppTileProps> = ({ app, onClick
         handlePinToggle(e); // For now, just toggle pin on right click
       }}
     >
-      {typeof app.icon === "string" ? (
-        <Image src={app.icon} alt={app.name} width={40} height={40} className="w-10 h-10 mb-1" />
+      {typeof app.icon === 'string' ? (
+        <Image src={app.icon} alt={app.name} width={40} height={40} className="mb-1 h-10 w-10" />
       ) : (
-        <div className="w-10 h-10 mb-1 flex items-center justify-center">{app.icon}</div>
+        <div className="mb-1 flex h-10 w-10 items-center justify-center">{app.icon}</div>
       )}
-      <span className="text-xs text-white text-center truncate w-full">{app.name}</span>
+      <span className="w-full truncate text-center text-xs text-white">{app.name}</span>
       {isPinned && (
-        <span className="absolute top-1 right-1 text-cyan-400 text-xs">&#9733;</span> // Star icon for pinned
+        <span className="absolute top-1 right-1 text-xs text-cyan-400">&#9733;</span> // Star icon for pinned
       )}
     </div>
   );

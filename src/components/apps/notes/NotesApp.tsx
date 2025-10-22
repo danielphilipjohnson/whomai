@@ -130,24 +130,32 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
 
   useShortcut('n', true, handleCreateNewNoteShortcut);
 
-  const applyMarkdownFormatting = useCallback((prefix: string, suffix: string) => {
-    if (note) {
-      const textarea = document.querySelector('textarea');
-      if (textarea) {
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
-        const selectedText = editorContent.substring(start, end);
-        const newContent = editorContent.substring(0, start) + prefix + selectedText + suffix + editorContent.substring(end);
-        setEditorContent(newContent);
-        debouncedSave(newContent);
-        // Restore selection after update
-        setTimeout(() => {
-          textarea.focus();
-          textarea.setSelectionRange(start + prefix.length, end + prefix.length);
-        }, 0);
+  const applyMarkdownFormatting = useCallback(
+    (prefix: string, suffix: string) => {
+      if (note) {
+        const textarea = document.querySelector('textarea');
+        if (textarea) {
+          const start = textarea.selectionStart;
+          const end = textarea.selectionEnd;
+          const selectedText = editorContent.substring(start, end);
+          const newContent =
+            editorContent.substring(0, start) +
+            prefix +
+            selectedText +
+            suffix +
+            editorContent.substring(end);
+          setEditorContent(newContent);
+          debouncedSave(newContent);
+          // Restore selection after update
+          setTimeout(() => {
+            textarea.focus();
+            textarea.setSelectionRange(start + prefix.length, end + prefix.length);
+          }, 0);
+        }
       }
-    }
-  }, [note, editorContent, debouncedSave]);
+    },
+    [note, editorContent, debouncedSave]
+  );
 
   const handleBoldShortcut = useCallback(() => {
     applyMarkdownFormatting('**', '**');
@@ -159,9 +167,6 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
 
   useShortcut('b', true, handleBoldShortcut);
   useShortcut('i', true, handleItalicShortcut);
-
-
-
 
   const handleEscape = useCallback(() => {
     setCurrentNoteId('');
@@ -223,7 +228,9 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
         setNoteChangeCounter((prev) => prev + 1);
         pushToast({
           title: updatedNote.pinned ? 'Pinned' : 'Unpinned',
-          message: updatedNote.pinned ? 'Note locked to quick access.' : 'Note released from quick access.',
+          message: updatedNote.pinned
+            ? 'Note locked to quick access.'
+            : 'Note released from quick access.',
           variant: 'info',
         });
       }
@@ -239,7 +246,9 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
         setNoteChangeCounter((prev) => prev + 1);
         pushToast({
           title: updatedNote.archived ? 'Archived' : 'Restored',
-          message: updatedNote.archived ? 'Moved to archive. You can restore it anytime.' : 'Returned to active notes.',
+          message: updatedNote.archived
+            ? 'Moved to archive. You can restore it anytime.'
+            : 'Returned to active notes.',
           variant: updatedNote.archived ? 'warning' : 'success',
         });
       }
@@ -248,8 +257,8 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
 
   const handleExportMarkdown = useCallback(() => {
     if (note) {
-      const element = document.createElement("a");
-      const file = new Blob([note.content], { type: "text/markdown" });
+      const element = document.createElement('a');
+      const file = new Blob([note.content], { type: 'text/markdown' });
       element.href = URL.createObjectURL(file);
       element.download = `${note.title}.md`;
       document.body.appendChild(element); // Required for Firefox
@@ -266,8 +275,8 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
         .process(note.content);
       const html = `<!DOCTYPE html>\n<html>\n<head>\n<title>${note.title}</title>\n<meta charset="utf-8">\n</head>\n<body>\n${processedContent.toString()}\n</body>\n</html>`;
 
-      const element = document.createElement("a");
-      const file = new Blob([html], { type: "text/html" });
+      const element = document.createElement('a');
+      const file = new Blob([html], { type: 'text/html' });
       element.href = URL.createObjectURL(file);
       element.download = `${note.title}.html`;
       document.body.appendChild(element); // Required for Firefox
@@ -276,42 +285,47 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
     }
   }, [note]);
 
-  const handleFileDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const fileId = event.dataTransfer.getData('application/x-cyber-item');
-    if (!fileId) return;
-    const file = getItemById(fileId);
-    if (!file || file.type !== 'file') return;
-    const extension = file.metadata?.extension?.toLowerCase();
-    if (extension !== 'md' && extension !== 'txt') return;
+  const handleFileDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const fileId = event.dataTransfer.getData('application/x-cyber-item');
+      if (!fileId) return;
+      const file = getItemById(fileId);
+      if (!file || file.type !== 'file') return;
+      const extension = file.metadata?.extension?.toLowerCase();
+      if (extension !== 'md' && extension !== 'txt') return;
 
-    try {
-      const content = readFile(fileId);
-      const noteTitle = file.name.replace(/\.(md|txt)$/i, '') || file.name;
-      const existing = notesRepository.getAllNotes().find((candidate) => candidate.title === noteTitle);
-      const target = existing ?? notesRepository.createNote(noteTitle);
-      const updated = notesRepository.updateNote(target.id, content);
-      setCurrentNoteId(target.id);
-      if (updated) {
-        setNote(updated);
-        setEditorContent(updated.content);
-        onNoteChange(updated);
-        setNoteChangeCounter((prev) => prev + 1);
+      try {
+        const content = readFile(fileId);
+        const noteTitle = file.name.replace(/\.(md|txt)$/i, '') || file.name;
+        const existing = notesRepository
+          .getAllNotes()
+          .find((candidate) => candidate.title === noteTitle);
+        const target = existing ?? notesRepository.createNote(noteTitle);
+        const updated = notesRepository.updateNote(target.id, content);
+        setCurrentNoteId(target.id);
+        if (updated) {
+          setNote(updated);
+          setEditorContent(updated.content);
+          onNoteChange(updated);
+          setNoteChangeCounter((prev) => prev + 1);
+          pushToast({
+            title: 'Imported',
+            message: `Pulled content from ${file.name}.`,
+            variant: 'success',
+          });
+        }
+      } catch (error) {
+        console.error('Failed to import file into notes', error);
         pushToast({
-          title: 'Imported',
-          message: `Pulled content from ${file.name}.`,
-          variant: 'success',
+          title: 'Import Failed',
+          message: 'We could not read that file. Try again?',
+          variant: 'error',
         });
       }
-    } catch (error) {
-      console.error('Failed to import file into notes', error);
-      pushToast({
-        title: 'Import Failed',
-        message: 'We could not read that file. Try again?',
-        variant: 'error',
-      });
-    }
-  }, [getItemById, readFile, onNoteChange]);
+    },
+    [getItemById, readFile, onNoteChange]
+  );
 
   if (!note || currentNoteId === '') {
     return (
@@ -326,7 +340,7 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
           onCreateNewNote={handleCreateNewNote}
           onNoteChange={noteChangeCounter}
         />
-        <div className="flex flex-col flex-1 items-center justify-center text-gray-400 text-xl">
+        <div className="flex flex-1 flex-col items-center justify-center text-xl text-gray-400">
           <p>Select a note from the sidebar or create a new one.</p>
         </div>
       </div>
@@ -348,11 +362,11 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
           onNoteChange={noteChangeCounter}
         />
       )}
-      <div className="flex flex-col flex-1">
-        <div className="flex justify-between items-center p-2 border-b border-gray-700 flex-wrap gap-2">
-          <div className="flex items-center mb-2 md:mb-0 w-full md:w-auto">
+      <div className="flex flex-1 flex-col">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-700 p-2">
+          <div className="mb-2 flex w-full items-center md:mb-0 md:w-auto">
             <button
-              className="p-2 rounded-md text-sm bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200 mr-2"
+              className="focus:ring-neon-blue focus:filter-neon-glow mr-2 rounded-md bg-gray-700 p-2 text-sm text-gray-300 transition-colors duration-200 hover:bg-gray-600 focus:ring-2 focus:outline-none"
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             >
               <Menu size={20} />
@@ -362,60 +376,65 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
                 <input
                   type="text"
                   value={note.title}
-                  onChange={(e) => setNote((prev) => prev ? { ...prev, title: e.target.value } : null)}
+                  onChange={(e) =>
+                    setNote((prev) => (prev ? { ...prev, title: e.target.value } : null))
+                  }
                   onBlur={handleTitleBlur}
                   onKeyDown={handleTitleKeyDown}
-                  className="bg-transparent border-b border-neon-green focus:outline-none focus:border-neon-blue focus:filter-neon-glow text-xl font-bold text-neon-green"
+                  className="border-neon-green focus:border-neon-blue focus:filter-neon-glow text-neon-green border-b bg-transparent text-xl font-bold focus:outline-none"
                   autoFocus
                 />
               ) : (
-                <h1 className="text-xl font-bold text-neon-green cursor-pointer" onClick={() => setIsEditingTitle(true)}>
+                <h1
+                  className="text-neon-green cursor-pointer text-xl font-bold"
+                  onClick={() => setIsEditingTitle(true)}
+                >
                   {note.title}
                 </h1>
               )
             ) : (
-              <h1 className="text-xl font-bold text-neon-green">Notes</h1>
+              <h1 className="text-neon-green text-xl font-bold">Notes</h1>
             )}
           </div>
-          <div className="flex flex-wrap justify-end space-x-2 mt-2 md:mt-0 w-full md:w-auto gap-2">
+          <div className="mt-2 flex w-full flex-wrap justify-end gap-2 space-x-2 md:mt-0 md:w-auto">
             <button
-              className="px-2 py-1 rounded-md text-sm bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200"
+              className="focus:ring-neon-blue focus:filter-neon-glow rounded-md bg-gray-700 px-2 py-1 text-sm text-gray-300 transition-colors duration-200 hover:bg-gray-600 focus:ring-2 focus:outline-none"
               onClick={handleTogglePin}
             >
               {note.pinned ? 'Unpin' : 'Pin'}
             </button>
             <button
-              className="px-2 py-1 rounded-md text-sm bg-red-700 text-white hover:bg-red-600 transition-colors duration-200"
+              className="rounded-md bg-red-700 px-2 py-1 text-sm text-white transition-colors duration-200 hover:bg-red-600"
               onClick={handleToggleArchive}
             >
               {note.archived ? 'Restore' : 'Delete'}
             </button>
             <button
-              className="px-2 py-1 rounded-md text-sm bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200"
+              className="focus:ring-neon-blue focus:filter-neon-glow rounded-md bg-gray-700 px-2 py-1 text-sm text-gray-300 transition-colors duration-200 hover:bg-gray-600 focus:ring-2 focus:outline-none"
               onClick={handleExportMarkdown}
             >
               Export MD
             </button>
             <button
-              className="px-2 py-1 rounded-md text-sm bg-gray-700 text-gray-300 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200"
+              className="focus:ring-neon-blue focus:filter-neon-glow rounded-md bg-gray-700 px-2 py-1 text-sm text-gray-300 transition-colors duration-200 hover:bg-gray-600 focus:ring-2 focus:outline-none"
               onClick={handleExportHtml}
             >
               Export HTML
             </button>
             <button
-              className={`px-3 py-1 rounded-md text-sm ${viewMode === 'edit' ? 'bg-neon-blue text-white filter-neon-glow' : 'bg-gray-700 text-gray-300'} focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow`}
+              className={`rounded-md px-3 py-1 text-sm ${viewMode === 'edit' ? 'bg-neon-blue filter-neon-glow text-white' : 'bg-gray-700 text-gray-300'} focus:ring-neon-blue focus:filter-neon-glow focus:ring-2 focus:outline-none`}
               onClick={() => setViewMode('edit')}
             >
               Edit
             </button>
             <button
-              className={`px-3 py-1 rounded-md text-sm ${viewMode === 'preview' ? 'bg-neon-blue text-white filter-neon-glow' : 'bg-gray-700 text-gray-300'} focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow`}
+              className={`rounded-md px-3 py-1 text-sm ${viewMode === 'preview' ? 'bg-neon-blue filter-neon-glow text-white' : 'bg-gray-700 text-gray-300'} focus:ring-neon-blue focus:filter-neon-glow focus:ring-2 focus:outline-none`}
               onClick={() => setViewMode('preview')}
             >
               Preview
             </button>
             <button
-              className={`px-3 py-1 rounded-md text-sm hidden xl:block ${viewMode === 'split' ? 'bg-neon-blue text-white filter-neon-glow' : 'bg-gray-700 text-gray-300'} focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow`}
+              className={`hidden rounded-md px-3 py-1 text-sm xl:block ${viewMode === 'split' ? 'bg-neon-blue filter-neon-glow text-white' : 'bg-gray-700 text-gray-300'} focus:ring-neon-blue focus:filter-neon-glow focus:ring-2 focus:outline-none`}
               onClick={() => setViewMode('split')}
             >
               Split
@@ -425,7 +444,7 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
         <div className="flex flex-1 overflow-hidden transition-all duration-300 ease-in-out">
           {(viewMode === 'edit' || viewMode === 'split') && (
             <textarea
-              className={`flex-1 p-4 bg-gray-800 border-r border-gray-700 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow font-mono text-sm resize-none ${viewMode === 'split' ? 'w-1/2' : 'w-full'}`}
+              className={`focus:ring-neon-blue focus:filter-neon-glow flex-1 resize-none border-r border-gray-700 bg-gray-800 p-4 font-mono text-sm focus:ring-2 focus:outline-none ${viewMode === 'split' ? 'w-1/2' : 'w-full'}`}
               value={editorContent}
               onChange={handleEditorChange}
               placeholder="Start writing your note..."

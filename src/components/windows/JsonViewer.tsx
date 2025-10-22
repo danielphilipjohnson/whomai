@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useEffect, useMemo, useState } from "react";
-import { Copy, Download, ListTree, NotebookPen, RotateCcw } from "lucide-react";
-import { JsonViewerPayload } from "@/lib/windowPayloads";
+import { useEffect, useMemo, useState } from 'react';
+import { Copy, Download, ListTree, NotebookPen, RotateCcw } from 'lucide-react';
+import { JsonViewerPayload } from '@/lib/windowPayloads';
 
 interface JsonViewerProps {
   payload?: JsonViewerPayload;
@@ -21,15 +21,15 @@ type TreeProps = {
 };
 
 const stringifyPreview = (value: unknown) => {
-  if (value === null) return "null";
+  if (value === null) return 'null';
   if (Array.isArray(value)) return `Array(${value.length})`;
-  if (typeof value === "object") return "Object";
-  if (typeof value === "string") return `"${value.slice(0, 48)}${value.length > 48 ? "…" : ""}"`;
+  if (typeof value === 'object') return 'Object';
+  if (typeof value === 'string') return `"${value.slice(0, 48)}${value.length > 48 ? '…' : ''}"`;
   return String(value);
 };
 
 const TreeNode = ({ value, path, expanded, toggle }: TreeProps) => {
-  const isObject = value !== null && typeof value === "object";
+  const isObject = value !== null && typeof value === 'object';
   const label = stringifyPreview(value);
 
   if (!isObject) {
@@ -45,20 +45,20 @@ const TreeNode = ({ value, path, expanded, toggle }: TreeProps) => {
     : Object.entries(value as Record<string, unknown>);
 
   const isExpanded = expanded.has(path);
-  const segment = path === "$" ? "root" : path.split(".").pop();
+  const segment = path === '$' ? 'root' : path.split('.').pop();
 
   return (
     <div className="space-y-2">
       <button
         type="button"
         onClick={() => toggle(path)}
-        className="flex w-full items-center gap-2 rounded border border-transparent px-2 py-1 text-left text-[11px] transition hover:border-neon-blue/40 hover:bg-cyan-500/5"
+        className="hover:border-neon-blue/40 flex w-full items-center gap-2 rounded border border-transparent px-2 py-1 text-left text-[11px] transition hover:bg-cyan-500/5"
       >
-        <span className="text-cyan-400">{isExpanded ? "▾" : "▸"}</span>
-        <span className="font-semibold text-neon-blue/80">
+        <span className="text-cyan-400">{isExpanded ? '▾' : '▸'}</span>
+        <span className="text-neon-blue/80 font-semibold">
           {Array.isArray(value) ? `Array(${entries.length})` : `Object {${entries.length}}`}
         </span>
-        <span className="text-[10px] uppercase tracking-[0.3em] text-cyan-700/70">{segment}</span>
+        <span className="text-[10px] tracking-[0.3em] text-cyan-700/70 uppercase">{segment}</span>
       </button>
       {isExpanded && (
         <div className="border-l border-cyan-900/40 pl-3">
@@ -81,19 +81,19 @@ const TreeNode = ({ value, path, expanded, toggle }: TreeProps) => {
 };
 
 export const JsonViewer = ({ payload }: JsonViewerProps) => {
-  const [rawInput, setRawInput] = useState<string>(payload?.content ?? "");
-  const [expanded, setExpanded] = useState<Set<string>>(new Set(["$"]));
+  const [rawInput, setRawInput] = useState<string>(payload?.content ?? '');
+  const [expanded, setExpanded] = useState<Set<string>>(new Set(['$']));
 
   useEffect(() => {
     if (payload?.content) {
       setRawInput(payload.content);
-      setExpanded(new Set(["$"]));
+      setExpanded(new Set(['$']));
     }
   }, [payload?.content]);
 
   const parseState: ParseState = useMemo(() => {
     if (!rawInput.trim()) {
-      return { data: null, error: "No JSON provided." };
+      return { data: null, error: 'No JSON provided.' };
     }
     try {
       return { data: JSON.parse(rawInput), error: null };
@@ -122,10 +122,10 @@ export const JsonViewer = ({ payload }: JsonViewerProps) => {
   };
 
   const handleExpandAll = () => {
-    if (!parseState.data || typeof parseState.data !== "object") return;
+    if (!parseState.data || typeof parseState.data !== 'object') return;
     const collect = new Set<string>();
     const walk = (value: unknown, currentPath: string) => {
-      if (value && typeof value === "object") {
+      if (value && typeof value === 'object') {
         collect.add(currentPath);
         const childEntries: [string | number, unknown][] = Array.isArray(value)
           ? value.map((item, index) => [index, item] as const)
@@ -135,28 +135,28 @@ export const JsonViewer = ({ payload }: JsonViewerProps) => {
         });
       }
     };
-    walk(parseState.data, "$");
+    walk(parseState.data, '$');
     setExpanded(collect);
   };
 
   const handleCollapseAll = () => {
-    setExpanded(new Set(["$"]));
+    setExpanded(new Set(['$']));
   };
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(formatted);
     } catch (error) {
-      console.error("Clipboard write failed", error);
+      console.error('Clipboard write failed', error);
     }
   };
 
   const handleDownload = () => {
-    const blob = new Blob([formatted], { type: "application/json" });
+    const blob = new Blob([formatted], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
+    const link = document.createElement('a');
     link.href = url;
-    link.download = `${payload?.name ?? "data"}.json`;
+    link.download = `${payload?.name ?? 'data'}.json`;
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -164,8 +164,8 @@ export const JsonViewer = ({ payload }: JsonViewerProps) => {
   };
 
   const resetInput = () => {
-    setRawInput(payload?.content ?? "");
-    setExpanded(new Set(["$"]));
+    setRawInput(payload?.content ?? '');
+    setExpanded(new Set(['$']));
   };
 
   return (
@@ -173,8 +173,10 @@ export const JsonViewer = ({ payload }: JsonViewerProps) => {
       <header className="border-b border-cyan-900/60 px-4 py-3">
         <div className="flex flex-col gap-1">
           <div className="flex items-center justify-between gap-3">
-            <span className="text-sm font-semibold text-neon-green">{payload?.name ?? "Data Inspector"}</span>
-            <div className="flex items-center gap-2 text-[10px] uppercase text-cyan-400/80">
+            <span className="text-neon-green text-sm font-semibold">
+              {payload?.name ?? 'Data Inspector'}
+            </span>
+            <div className="flex items-center gap-2 text-[10px] text-cyan-400/80 uppercase">
               <span className="hidden items-center gap-1 sm:flex">
                 <ListTree className="h-3.5 w-3.5" />
                 Tree
@@ -185,51 +187,60 @@ export const JsonViewer = ({ payload }: JsonViewerProps) => {
               </span>
             </div>
           </div>
-          <span className="text-[10px] uppercase tracking-[0.3em] text-cyan-700/70">{payload?.path ?? "unsaved://buffer"}</span>
+          <span className="text-[10px] tracking-[0.3em] text-cyan-700/70 uppercase">
+            {payload?.path ?? 'unsaved://buffer'}
+          </span>
         </div>
       </header>
 
-      <div className="flex flex-1 min-h-0 flex-col md:flex-row">
-        <section className="flex h-56 min-h-[14rem] flex-1 flex-col border-b border-cyan-900/40 md:h-auto md:border-b-0 md:border-r">
+      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
+        <section className="flex h-56 min-h-[14rem] flex-1 flex-col border-b border-cyan-900/40 md:h-auto md:border-r md:border-b-0">
           <div className="flex items-center gap-2 border-b border-cyan-900/40 px-3 py-2">
             <button
               type="button"
               onClick={handleExpandAll}
-              className="rounded border border-cyan-800/60 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-cyan-300 transition hover:border-neon-blue hover:text-neon-blue"
+              className="hover:border-neon-blue hover:text-neon-blue rounded border border-cyan-800/60 px-2 py-1 text-[10px] tracking-[0.2em] text-cyan-300 uppercase transition"
             >
               Expand
             </button>
             <button
               type="button"
               onClick={handleCollapseAll}
-              className="rounded border border-cyan-800/60 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-cyan-300 transition hover:border-neon-blue hover:text-neon-blue"
+              className="hover:border-neon-blue hover:text-neon-blue rounded border border-cyan-800/60 px-2 py-1 text-[10px] tracking-[0.2em] text-cyan-300 uppercase transition"
             >
               Collapse
             </button>
             <button
               type="button"
               onClick={handleCopy}
-              className="ml-auto flex items-center gap-1 rounded border border-cyan-800/60 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-cyan-300 transition hover:border-neon-blue hover:text-neon-blue"
+              className="hover:border-neon-blue hover:text-neon-blue ml-auto flex items-center gap-1 rounded border border-cyan-800/60 px-2 py-1 text-[10px] tracking-[0.2em] text-cyan-300 uppercase transition"
             >
               <Copy className="h-3 w-3" /> Copy
             </button>
             <button
               type="button"
               onClick={handleDownload}
-              className="flex items-center gap-1 rounded border border-cyan-800/60 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-cyan-300 transition hover:border-neon-blue hover:text-neon-blue"
+              className="hover:border-neon-blue hover:text-neon-blue flex items-center gap-1 rounded border border-cyan-800/60 px-2 py-1 text-[10px] tracking-[0.2em] text-cyan-300 uppercase transition"
             >
               <Download className="h-3 w-3" /> Export
             </button>
           </div>
 
-          <div className="flex-1 min-h-0 overflow-y-auto px-3 py-3">
+          <div className="min-h-0 flex-1 overflow-y-auto px-3 py-3">
             {parseState.error ? (
               <div className="rounded border border-red-500/40 bg-red-900/20 p-3 text-[11px] text-red-200">
-                <div className="font-semibold uppercase tracking-[0.3em] text-red-300">Parse Error</div>
+                <div className="font-semibold tracking-[0.3em] text-red-300 uppercase">
+                  Parse Error
+                </div>
                 <p className="mt-1 text-red-200/90">{parseState.error}</p>
               </div>
             ) : (
-              <TreeNode value={parseState.data} path="$" expanded={expanded} toggle={handleToggle} />
+              <TreeNode
+                value={parseState.data}
+                path="$"
+                expanded={expanded}
+                toggle={handleToggle}
+              />
             )}
           </div>
         </section>
@@ -239,11 +250,11 @@ export const JsonViewer = ({ payload }: JsonViewerProps) => {
             <button
               type="button"
               onClick={resetInput}
-              className="flex items-center gap-1 rounded border border-cyan-800/60 px-2 py-1 text-[10px] uppercase tracking-[0.2em] text-cyan-300 transition hover:border-neon-blue hover:text-neon-blue"
+              className="hover:border-neon-blue hover:text-neon-blue flex items-center gap-1 rounded border border-cyan-800/60 px-2 py-1 text-[10px] tracking-[0.2em] text-cyan-300 uppercase transition"
             >
               <RotateCcw className="h-3 w-3" /> Reset
             </button>
-            <span className="ml-auto flex items-center gap-1 text-[10px] uppercase tracking-[0.3em] text-cyan-600/70">
+            <span className="ml-auto flex items-center gap-1 text-[10px] tracking-[0.3em] text-cyan-600/70 uppercase">
               <NotebookPen className="h-3.5 w-3.5" /> Editor Buffer
             </span>
           </div>
@@ -251,7 +262,7 @@ export const JsonViewer = ({ payload }: JsonViewerProps) => {
             value={rawInput}
             onChange={(event) => setRawInput(event.target.value)}
             spellCheck={false}
-            className="flex-1 min-h-0 resize-none bg-transparent px-4 py-3 font-mono text-xs leading-5 text-cyan-100 outline-none"
+            className="min-h-0 flex-1 resize-none bg-transparent px-4 py-3 font-mono text-xs leading-5 text-cyan-100 outline-none"
           />
         </section>
       </div>

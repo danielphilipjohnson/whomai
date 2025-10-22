@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect } from 'react';
 import { Toast, ToastVariant, useToastStore } from '@/store/useToastStore';
@@ -12,7 +12,11 @@ const variantStyles: Record<ToastVariant, string> = {
 };
 
 const formatTimestamp = (timestamp: number) =>
-  new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  new Date(timestamp).toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  });
 
 const ToastCard = ({ toast }: { toast: Toast }) => {
   const removeToast = useToastStore((state) => state.removeToast);
@@ -32,14 +36,14 @@ const ToastCard = ({ toast }: { toast: Toast }) => {
     <div
       role="status"
       className={clsx(
-        'relative min-w-[240px] max-w-sm rounded-lg border px-4 py-3 font-mono backdrop-blur transition-all duration-300',
+        'relative max-w-sm min-w-[240px] rounded-lg border px-4 py-3 font-mono backdrop-blur transition-all duration-300',
         'overflow-hidden before:pointer-events-none before:absolute before:inset-0 before:bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.08),_transparent)]',
-        variantStyles[toast.variant],
+        variantStyles[toast.variant]
       )}
     >
       <div className="flex items-start gap-3">
         <div className="flex-1">
-          <div className="flex items-center justify-between text-xs uppercase tracking-[0.2em] opacity-80">
+          <div className="flex items-center justify-between text-xs tracking-[0.2em] uppercase opacity-80">
             <span>{toast.variant}</span>
             <span>{formatTimestamp(toast.createdAt)}</span>
           </div>
@@ -48,7 +52,7 @@ const ToastCard = ({ toast }: { toast: Toast }) => {
         </div>
         <button
           type="button"
-          className="ml-auto text-xs uppercase tracking-[0.3em] text-gray-400 hover:text-white"
+          className="ml-auto text-xs tracking-[0.3em] text-gray-400 uppercase hover:text-white"
           onClick={() => removeToast(toast.id)}
           aria-label="Dismiss notification"
         >
@@ -67,7 +71,7 @@ export const CyberToastContainer = () => {
     <div className="pointer-events-none fixed inset-0 z-[9999] flex items-start justify-end px-6 py-8">
       <div className="flex w-full max-w-xs flex-col gap-3">
         {toasts.map((toast) => (
-          <div key={toast.id} className="pointer-events-auto toast-slide-in">
+          <div key={toast.id} className="toast-slide-in pointer-events-auto">
             <ToastCard toast={toast} />
           </div>
         ))}

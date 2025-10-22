@@ -20,12 +20,12 @@ interface NotesSidebarProps {
   onNoteChange: number; // Counter to trigger useEffect
 }
 
-const NotesSidebar: React.FC<NotesSidebarProps> = ({
+const NotesSidebar = ({
   onSelectNote,
   activeNoteId,
   onCreateNewNote,
   onNoteChange,
-}) => {
+}: NotesSidebarProps) => {
   const [allNotes, setAllNotes] = useState<Note[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [filter, setFilter] = useState<NoteFilter>('active');
@@ -81,7 +81,7 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
           // No need to call onNoteChange here, as the parent will handle it
           fetchNotes(); // Refresh the list
         } catch (error) {
-          console.error("Error importing note:", error);
+          console.error('Error importing note:', error);
           alert(`Error importing note: ${(error as Error).message}`);
         }
       };
@@ -109,10 +109,10 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
   const noteTitle = notePendingDeletion?.title || 'Untitled Note';
 
   return (
-    <div className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col">
-      <div className="p-2 border-b border-gray-700">
+    <div className="flex w-64 flex-col border-r border-gray-700 bg-gray-800">
+      <div className="border-b border-gray-700 p-2">
         <button
-          className="w-full bg-neon-blue text-white py-2 rounded-md hover:bg-neon-blue-dark focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200"
+          className="bg-neon-blue hover:bg-neon-blue-dark focus:ring-neon-blue focus:filter-neon-glow w-full rounded-md py-2 text-white transition-colors duration-200 focus:ring-2 focus:outline-none"
           onClick={onCreateNewNote}
         >
           + New Note
@@ -125,7 +125,7 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
           onChange={handleImportNote}
         />
         <button
-          className="w-full bg-gray-700 text-gray-300 py-2 rounded-md hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow transition-colors duration-200 mt-2"
+          className="focus:ring-neon-blue focus:filter-neon-glow mt-2 w-full rounded-md bg-gray-700 py-2 text-gray-300 transition-colors duration-200 hover:bg-gray-600 focus:ring-2 focus:outline-none"
           onClick={() => document.getElementById('import-note-file-input')?.click()}
         >
           Import MD
@@ -134,25 +134,25 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
           ref={searchInputRef}
           type="text"
           placeholder="Search notes..."
-          className="w-full mt-2 p-2 rounded-md bg-gray-700 text-gray-50 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow"
+          className="focus:ring-neon-blue focus:filter-neon-glow mt-2 w-full rounded-md border border-gray-600 bg-gray-700 p-2 text-gray-50 focus:ring-2 focus:outline-none"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
-        <div className="flex mt-2 space-x-2">
+        <div className="mt-2 flex space-x-2">
           <button
-            className={`flex-1 px-3 py-1 rounded-md text-sm ${filter === 'active' ? 'bg-neon-blue text-white filter-neon-glow' : 'bg-gray-700 text-gray-300'} focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow`}
+            className={`flex-1 rounded-md px-3 py-1 text-sm ${filter === 'active' ? 'bg-neon-blue filter-neon-glow text-white' : 'bg-gray-700 text-gray-300'} focus:ring-neon-blue focus:filter-neon-glow focus:ring-2 focus:outline-none`}
             onClick={() => setFilter('active')}
           >
             Active
           </button>
           <button
-            className={`flex-1 px-3 py-1 rounded-md text-sm ${filter === 'archived' ? 'bg-neon-blue text-white filter-neon-glow' : 'bg-gray-700 text-gray-300'} focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow`}
+            className={`flex-1 rounded-md px-3 py-1 text-sm ${filter === 'archived' ? 'bg-neon-blue filter-neon-glow text-white' : 'bg-gray-700 text-gray-300'} focus:ring-neon-blue focus:filter-neon-glow focus:ring-2 focus:outline-none`}
             onClick={() => setFilter('archived')}
           >
             Archived
           </button>
           <button
-            className={`flex-1 px-3 py-1 rounded-md text-sm ${filter === 'all' ? 'bg-neon-blue text-white filter-neon-glow' : 'bg-gray-700 text-gray-300'} focus:outline-none focus:ring-2 focus:ring-neon-blue focus:filter-neon-glow`}
+            className={`flex-1 rounded-md px-3 py-1 text-sm ${filter === 'all' ? 'bg-neon-blue filter-neon-glow text-white' : 'bg-gray-700 text-gray-300'} focus:ring-neon-blue focus:filter-neon-glow focus:ring-2 focus:outline-none`}
             onClick={() => setFilter('all')}
           >
             All
@@ -163,17 +163,21 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
         {filteredNotes.map((note) => (
           <div
             key={note.id}
-            className={`relative p-3 flex justify-between items-center cursor-pointer border-b border-gray-700 hover:bg-gray-700 ${note.id === activeNoteId ? 'bg-gray-700 text-neon-green filter-neon-glow' : 'text-gray-300'}`}
+            className={`relative flex cursor-pointer items-center justify-between border-b border-gray-700 p-3 hover:bg-gray-700 ${note.id === activeNoteId ? 'text-neon-green filter-neon-glow bg-gray-700' : 'text-gray-300'}`}
             onClick={() => onSelectNote(note.id)}
-          > <div className="flex flex-col">
-            <h3 className="font-bold text-sm truncate">{note.title || 'Untitled Note'} {note.pinned && '📌'}</h3>
-            <p className="text-xs text-gray-400 truncate">
-              {new Date(note.updatedAt).toLocaleString()}
-            </p>
+          >
+            {' '}
+            <div className="flex flex-col">
+              <h3 className="truncate text-sm font-bold">
+                {note.title || 'Untitled Note'} {note.pinned && '📌'}
+              </h3>
+              <p className="truncate text-xs text-gray-400">
+                {new Date(note.updatedAt).toLocaleString()}
+              </p>
             </div>
             {filter === 'archived' && (
               <button
-                className="text-red-500 hover:text-red-400 text-xs ml-2 p-1 rounded-full hover:bg-gray-700 absolute"
+                className="absolute ml-2 rounded-full p-1 text-xs text-red-500 hover:bg-gray-700 hover:text-red-400"
                 onClick={(e) => {
                   e.stopPropagation(); // Prevent selecting the note when clicking delete
                   setNotePendingDeletion(note);
@@ -184,7 +188,7 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
             )}
             {filter === 'active' && (
               <button
-                className="text-red-500 hover:text-red-400 text-xs ml-2 p-1 rounded-full hover:bg-gray-700"
+                className="ml-2 rounded-full p-1 text-xs text-red-500 hover:bg-gray-700 hover:text-red-400"
                 onClick={(e) => {
                   e.stopPropagation(); // Prevent selecting the note when clicking delete
                   setNotePendingDeletion(note);
@@ -196,12 +200,19 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
           </div>
         ))}
       </div>
-      <Dialog open={!!notePendingDeletion} onOpenChange={(open) => !open && setNotePendingDeletion(null)}>
-        <DialogContent className="bg-black/90 border border-fuchsia-500 shadow-[0_0_35px_rgba(188,19,254,0.45)] text-gray-100">
+      <Dialog
+        open={!!notePendingDeletion}
+        onOpenChange={(open) => !open && setNotePendingDeletion(null)}
+      >
+        <DialogContent className="border border-fuchsia-500 bg-black/90 text-gray-100 shadow-[0_0_35px_rgba(188,19,254,0.45)]">
           <DialogHeader>
-            <DialogTitle className="text-neon-purple uppercase tracking-[0.2em] text-sm">Purge Confirmation</DialogTitle>
+            <DialogTitle className="text-neon-purple text-sm tracking-[0.2em] uppercase">
+              Purge Confirmation
+            </DialogTitle>
             <DialogDescription className="text-gray-300">
-              You are about to erase <span className="text-neon-blue font-semibold">{noteTitle}</span>. This action cannot be undone.
+              You are about to erase{' '}
+              <span className="text-neon-blue font-semibold">{noteTitle}</span>. This action cannot
+              be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="mt-4 rounded-md border border-fuchsia-600/40 bg-gradient-to-br from-fuchsia-900/20 via-black to-slate-900/50 p-4 text-xs text-gray-300">
@@ -211,13 +222,13 @@ const NotesSidebar: React.FC<NotesSidebarProps> = ({
           </div>
           <DialogFooter className="mt-6 flex-row gap-3">
             <button
-              className="flex-1 rounded-md border border-gray-600 bg-transparent px-3 py-2 text-sm uppercase tracking-wide text-gray-300 transition hover:border-neon-blue hover:text-neon-blue"
+              className="hover:border-neon-blue hover:text-neon-blue flex-1 rounded-md border border-gray-600 bg-transparent px-3 py-2 text-sm tracking-wide text-gray-300 uppercase transition"
               onClick={() => setNotePendingDeletion(null)}
             >
               Abort
             </button>
             <button
-              className="flex-1 rounded-md border border-fuchsia-500 bg-fuchsia-900/40 px-3 py-2 text-sm uppercase tracking-wide text-fuchsia-200 transition hover:bg-fuchsia-700/40 hover:text-white hover:shadow-[0_0_20px_rgba(255,7,58,0.6)]"
+              className="flex-1 rounded-md border border-fuchsia-500 bg-fuchsia-900/40 px-3 py-2 text-sm tracking-wide text-fuchsia-200 uppercase transition hover:bg-fuchsia-700/40 hover:text-white hover:shadow-[0_0_20px_rgba(255,7,58,0.6)]"
               onClick={handleConfirmDelete}
             >
               Confirm Purge

@@ -13,7 +13,7 @@ interface WindowFrameProps {
   children: React.ReactNode;
 }
 
-const WindowFrame: React.FC<WindowFrameProps> = ({
+const WindowFrame = ({
   windowState,
   onClose,
   onMinimize,
@@ -21,7 +21,7 @@ const WindowFrame: React.FC<WindowFrameProps> = ({
   onBringToFront,
   title,
   children,
-}) => {
+}: WindowFrameProps) => {
   const nodeRef = useRef(null);
   const [size, setSize] = useState({ width: 800, height: 600 });
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -55,8 +55,13 @@ const WindowFrame: React.FC<WindowFrameProps> = ({
     >
       <div
         ref={nodeRef}
-        className={`absolute bg-gray-900 border border-neon-blue shadow-neon-blue-glow rounded-lg overflow-hidden ${windowState.maximized ? '!w-full !h-full !top-0 !left-0' : ''}`}
-        style={{ zIndex: windowState.zIndex, ...(!windowState.maximized && { transform: `translate(${position.x}px, ${position.y}px)` }) }}
+        className={`border-neon-blue shadow-neon-blue-glow absolute overflow-hidden rounded-lg border bg-gray-900 ${windowState.maximized ? '!top-0 !left-0 !h-full !w-full' : ''}`}
+        style={{
+          zIndex: windowState.zIndex,
+          ...(!windowState.maximized && {
+            transform: `translate(${position.x}px, ${position.y}px)`,
+          }),
+        }}
       >
         <Resizable
           size={size}
@@ -68,26 +73,37 @@ const WindowFrame: React.FC<WindowFrameProps> = ({
           }}
           minWidth={300}
           minHeight={200}
-          enable={!windowState.maximized ? { top: true, right: true, bottom: true, left: true, topRight: true, bottomRight: true, bottomLeft: true, topLeft: true } : {}}
+          enable={
+            !windowState.maximized
+              ? {
+                  top: true,
+                  right: true,
+                  bottom: true,
+                  left: true,
+                  topRight: true,
+                  bottomRight: true,
+                  bottomLeft: true,
+                  topLeft: true,
+                }
+              : {}
+          }
           className="flex h-full w-full flex-col"
         >
-          <div className="window-header flex justify-between items-center p-2 bg-gray-800 border-b border-neon-blue cursor-grab">
+          <div className="window-header border-neon-blue flex cursor-grab items-center justify-between border-b bg-gray-800 p-2">
             <span className="text-neon-green font-bold">{title}</span>
             <div className="flex space-x-2">
-              <button onClick={onMinimize} className="text-gray-400 hover:text-neon-blue">
+              <button onClick={onMinimize} className="hover:text-neon-blue text-gray-400">
                 —
               </button>
-              <button onClick={onMaximize} className="text-gray-400 hover:text-neon-green">
+              <button onClick={onMaximize} className="hover:text-neon-green text-gray-400">
                 {windowState.maximized ? '▢' : '☐'}
               </button>
-              <button onClick={onClose} className="text-gray-400 hover:text-neon-red">
+              <button onClick={onClose} className="hover:text-neon-red text-gray-400">
                 ✕
               </button>
             </div>
           </div>
-          <div className="window-content flex flex-1 flex-col overflow-hidden">
-            {children}
-          </div>
+          <div className="window-content flex flex-1 flex-col overflow-hidden">{children}</div>
         </Resizable>
       </div>
     </Draggable>

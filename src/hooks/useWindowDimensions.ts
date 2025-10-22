@@ -18,7 +18,6 @@ export const useWindowDimensions = ({
   defaultHeight = 400,
   padding = 32,
 }: UseWindowDimensionsOptions = {}): WindowDimensions => {
-
   const calculateDimensions = useCallback((): WindowDimensions => {
     if (typeof window === 'undefined') {
       return { width: defaultWidth, height: defaultHeight, x: 0, y: 0 };

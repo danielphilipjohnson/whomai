@@ -2,7 +2,7 @@ import React, { useRef, KeyboardEvent } from 'react';
 import { useTerminal } from '@/hooks/UseTerminal';
 import { useTerminalBehavior } from '@/hooks/useTerminalBehavior';
 
-const TerminalWindow: React.FC = () => {
+const TerminalWindow = () => {
   const { command, setCommand, history, whoamiData, handleCommand } = useTerminal();
   const inputRef = useRef<HTMLInputElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -18,7 +18,7 @@ const TerminalWindow: React.FC = () => {
 
   return (
     <div
-      className="w-full h-full bg-black text-green-400 font-mono p-4 overflow-y-auto"
+      className="h-full w-full overflow-y-auto bg-black p-4 font-mono text-green-400"
       ref={scrollRef}
       onClick={() => inputRef.current?.focus()}
     >
@@ -27,15 +27,27 @@ const TerminalWindow: React.FC = () => {
           <div key={index} dangerouslySetInnerHTML={{ __html: line }} />
         ))}
         {whoamiData && (
-          <div className="mt-2 p-2 border border-green-700">
+          <div className="mt-2 border border-green-700 p-2">
             <h3 className="text-lg text-green-300">System Scan Results:</h3>
             <ul>
-              <li><strong>IP Address:</strong> {whoamiData.ipaddress}</li>
-              <li><strong>Operating System:</strong> {whoamiData.os}</li>
-              <li><strong>Browser:</strong> {whoamiData.browser_name} ({whoamiData.browser_version})</li>
-              <li><strong>Language:</strong> {whoamiData.language} ({whoamiData.parsed_language})</li>
-              <li><strong>Software:</strong> {whoamiData.software}</li>
-              <li><strong>Total Requests:</strong> {whoamiData.total_requests}</li>
+              <li>
+                <strong>IP Address:</strong> {whoamiData.ipaddress}
+              </li>
+              <li>
+                <strong>Operating System:</strong> {whoamiData.os}
+              </li>
+              <li>
+                <strong>Browser:</strong> {whoamiData.browser_name} ({whoamiData.browser_version})
+              </li>
+              <li>
+                <strong>Language:</strong> {whoamiData.language} ({whoamiData.parsed_language})
+              </li>
+              <li>
+                <strong>Software:</strong> {whoamiData.software}
+              </li>
+              <li>
+                <strong>Total Requests:</strong> {whoamiData.total_requests}
+              </li>
             </ul>
           </div>
         )}
@@ -47,7 +59,7 @@ const TerminalWindow: React.FC = () => {
             value={command}
             onChange={(e) => setCommand(e.target.value)}
             onKeyDown={onCommandKeyDown}
-            className="bg-transparent border-none text-green-400 focus:outline-none flex-grow ml-2"
+            className="ml-2 flex-grow border-none bg-transparent text-green-400 focus:outline-none"
             autoFocus
           />
         </div>
