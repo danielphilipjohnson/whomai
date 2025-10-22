@@ -2,9 +2,11 @@
 import Logs from './windows/Logs';
 import Kernel from './windows/Kernel';
 import FileExplorer from './windows/FileExplorer';
-import NotesApp from '@/app/apps/notes/NotesApp';
+import NotesApp from '@/components/apps/notes/NotesApp';
 import Folder from './Folder';
 import { useWindowStore } from '@/store/useWindowStore';
+import { useCallback } from 'react';
+import { Note } from '@/lib/notes';
 import TerminalWindow from './windows/TerminalWindow';
 import { StartMenu } from './StartMenu';
 import { useShortcut } from "@/hooks/useShortcut";
@@ -18,7 +20,7 @@ import Mira from './windows/Mira';
 import SystemMonitor from './windows/SystemMonitor';
 
 const CyberpunkDesktop = () => {
-	const { windows, openWindow, closeWindow, bringToFront, minimizeWindow, maximizeWindow, toggleStartMenu } = useWindowStore();
+	const { windows, openWindow, closeWindow, bringToFront, minimizeWindow, maximizeWindow, toggleStartMenu, updateWindowPayload } = useWindowStore();
 	const { getApp } = useAppRegistry();
 	const notesAppMeta = getApp("notes");
 	const terminalAppMeta = getApp("terminal");
@@ -32,8 +34,13 @@ const CyberpunkDesktop = () => {
 	const monitorAppMeta = getApp("monitor");
 
 
-	const handleNotesChange = () => {
-	};
+	const handleNotesChange = useCallback((next: Note | null) => {
+		if (!next) {
+			updateWindowPayload('notes');
+			return;
+		}
+		updateWindowPayload('notes', { id: next.id, title: next.title });
+	}, [updateWindowPayload]);
 
 	useShortcut(' ', true, toggleStartMenu);
 

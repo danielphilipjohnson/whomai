@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { notesRepository } from '@/lib/notesRepository';
 import { Note } from '@/lib/notes';
 import { useShortcut } from '@/hooks/useShortcut';
@@ -10,13 +10,14 @@ import MarkdownPreview from './MarkdownPreview';
 import NotesSidebar from './NotesSidebar';
 import { Menu } from 'lucide-react';
 import { useFileSystemStore } from '@/store/useFileSystemStore';
+import { pushToast } from '@/store/useToastStore';
 
 type ViewMode = 'edit' | 'preview' | 'split';
 
 interface NotesAppProps {
   id: string;
   title: string;
-  onNoteChange: () => void; // New prop
+  onNoteChange: (note: Note | null) => void;
 }
 
 const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
@@ -27,41 +28,53 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
   const [isEditingTitle, setIsEditingTitle] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true); // New state for sidebar visibility
   const [noteChangeCounter, setNoteChangeCounter] = useState<number>(0);
+  const lastAutosaveToast = useRef(0);
   const getItemById = useFileSystemStore((state) => state.getItemById);
   const readFile = useFileSystemStore((state) => state.readFile);
 
   // Load note on initial mount or when currentNoteId changes
   useEffect(() => {
-    if (!currentNoteId || currentNoteId === 'notes') { // Check if currentNoteId is invalid or default
-      // If no valid note ID, don't try to fetch, just show empty state
+    if (!currentNoteId || currentNoteId === 'notes') {
       setNote(null);
       setEditorContent('');
+      onNoteChange(null);
       return;
     }
 
     let fetchedNote = notesRepository.getNoteById(currentNoteId);
     if (!fetchedNote) {
-      // This case should ideally not happen if currentNoteId is valid, but as a fallback
       console.warn(`Note with ID ${currentNoteId} not found. Creating a new one.`);
       fetchedNote = notesRepository.createNote(title);
-      setCurrentNoteId(fetchedNote.id); // Update the currentNoteId to the new note's ID
+      setCurrentNoteId(fetchedNote.id);
     }
     setNote(fetchedNote);
     setEditorContent(fetchedNote.content);
-  }, [currentNoteId, title]);
+    onNoteChange(fetchedNote);
+  }, [currentNoteId, title, onNoteChange]);
 
   // Debounced autosave
   const debouncedSave = useCallback(
     debounce((updatedContent: string) => {
       if (note) {
-        notesRepository.updateNote(note.id, updatedContent);
-        setNote((prevNote) => prevNote ? { ...prevNote, content: updatedContent, updatedAt: Date.now() } : null);
-        onNoteChange(); // Notify parent of change
-        setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
-        console.log('Note autosaved!', note.id);
+        const updated = notesRepository.updateNote(note.id, updatedContent);
+        if (updated) {
+          setNote(updated);
+          onNoteChange(updated);
+          setNoteChangeCounter((prev) => prev + 1);
+          const now = Date.now();
+          if (now - lastAutosaveToast.current > 4500) {
+            pushToast({
+              title: 'Autosynced',
+              message: `Saved "${updated.title || 'Untitled Note'}"`,
+              variant: 'success',
+              duration: 2200,
+            });
+            lastAutosaveToast.current = now;
+          }
+        }
       }
-    }, 1000), // Save after 1 second of inactivity
-    [note]
+    }, 1000),
+    [note, onNoteChange]
   );
 
   // Handle editor content changes
@@ -73,14 +86,20 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
 
   // Manual save with Cmd/Ctrl + S
   const handleManualSave = useCallback(() => {
-    if (note && editorContent) {
-      notesRepository.updateNote(note.id, editorContent);
-      setNote((prevNote) => prevNote ? { ...prevNote, content: editorContent, updatedAt: Date.now() } : null);
-      onNoteChange(); // Notify parent of change
-      setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
-      console.log('Note manually saved!', note.id);
+    if (note) {
+      const updated = notesRepository.updateNote(note.id, editorContent);
+      if (updated) {
+        setNote(updated);
+        onNoteChange(updated);
+        setNoteChangeCounter((prev) => prev + 1);
+        pushToast({
+          title: 'Note Saved',
+          message: `Saved "${updated.title || 'Untitled Note'}"`,
+          variant: 'success',
+        });
+      }
     }
-  }, [note, editorContent]);
+  }, [note, editorContent, onNoteChange]);
 
   useShortcut('s', true, handleManualSave);
 
@@ -98,9 +117,16 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
   const handleCreateNewNoteShortcut = useCallback(() => {
     const newNote = notesRepository.createNote('Untitled Note');
     setCurrentNoteId(newNote.id);
-    onNoteChange(); // Notify parent of change
-    setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
-  }, []);
+    setNote(newNote);
+    setEditorContent('');
+    onNoteChange(newNote);
+    setNoteChangeCounter((prev) => prev + 1);
+    pushToast({
+      title: 'New Note',
+      message: 'Untitled Note drafted and ready.',
+      variant: 'info',
+    });
+  }, [onNoteChange]);
 
   useShortcut('n', true, handleCreateNewNoteShortcut);
 
@@ -138,10 +164,12 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
 
 
   const handleEscape = useCallback(() => {
-    setCurrentNoteId(''); // Deselect the current note
-    onNoteChange(); // Notify parent of change
-    setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
-  }, []);
+    setCurrentNoteId('');
+    setNote(null);
+    setEditorContent('');
+    onNoteChange(null);
+    setNoteChangeCounter((prev) => prev + 1);
+  }, [onNoteChange]);
 
   useShortcut('escape', false, handleEscape); // `false` for no meta key (Cmd/Ctrl)
 
@@ -152,16 +180,31 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
   const handleCreateNewNote = useCallback(() => {
     const newNote = notesRepository.createNote('Untitled Note');
     setCurrentNoteId(newNote.id);
-    onNoteChange(); // Notify parent of change
-    setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
-  }, []);
+    setNote(newNote);
+    setEditorContent('');
+    onNoteChange(newNote);
+    setNoteChangeCounter((prev) => prev + 1);
+    pushToast({
+      title: 'New Note',
+      message: 'Untitled Note drafted and ready.',
+      variant: 'info',
+    });
+  }, [onNoteChange]);
 
   const handleTitleBlur = () => {
     if (note) {
-      notesRepository.renameNote(note.id, note.title);
+      const renamed = notesRepository.renameNote(note.id, note.title);
       setIsEditingTitle(false);
-      onNoteChange(); // Notify parent of change
-      setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
+      if (renamed) {
+        setNote(renamed);
+        onNoteChange(renamed);
+        setNoteChangeCounter((prev) => prev + 1);
+        pushToast({
+          title: 'Title Updated',
+          message: `Now tracking as "${renamed.title || 'Untitled Note'}"`,
+          variant: 'info',
+        });
+      }
     }
   };
 
@@ -176,22 +219,32 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
       const updatedNote = notesRepository.togglePin(note.id);
       if (updatedNote) {
         setNote(updatedNote);
-        onNoteChange(); // Notify parent of change
-        setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
+        onNoteChange(updatedNote);
+        setNoteChangeCounter((prev) => prev + 1);
+        pushToast({
+          title: updatedNote.pinned ? 'Pinned' : 'Unpinned',
+          message: updatedNote.pinned ? 'Note locked to quick access.' : 'Note released from quick access.',
+          variant: 'info',
+        });
       }
     }
-  }, [note]);
+  }, [note, onNoteChange]);
 
   const handleToggleArchive = useCallback(() => {
     if (note) {
       const updatedNote = notesRepository.toggleArchive(note.id);
       if (updatedNote) {
         setNote(updatedNote);
-        onNoteChange(); // Notify parent of change
-        setNoteChangeCounter(prev => prev + 1); // Trigger sidebar update
+        onNoteChange(updatedNote);
+        setNoteChangeCounter((prev) => prev + 1);
+        pushToast({
+          title: updatedNote.archived ? 'Archived' : 'Restored',
+          message: updatedNote.archived ? 'Moved to archive. You can restore it anytime.' : 'Returned to active notes.',
+          variant: updatedNote.archived ? 'warning' : 'success',
+        });
       }
     }
-  }, [note]);
+  }, [note, onNoteChange]);
 
   const handleExportMarkdown = useCallback(() => {
     if (note) {
@@ -237,12 +290,26 @@ const NotesApp = ({ id, title, onNoteChange }: NotesAppProps) => {
       const noteTitle = file.name.replace(/\.(md|txt)$/i, '') || file.name;
       const existing = notesRepository.getAllNotes().find((candidate) => candidate.title === noteTitle);
       const target = existing ?? notesRepository.createNote(noteTitle);
-      notesRepository.updateNote(target.id, content);
+      const updated = notesRepository.updateNote(target.id, content);
       setCurrentNoteId(target.id);
-      onNoteChange();
-      setNoteChangeCounter(prev => prev + 1);
+      if (updated) {
+        setNote(updated);
+        setEditorContent(updated.content);
+        onNoteChange(updated);
+        setNoteChangeCounter((prev) => prev + 1);
+        pushToast({
+          title: 'Imported',
+          message: `Pulled content from ${file.name}.`,
+          variant: 'success',
+        });
+      }
     } catch (error) {
       console.error('Failed to import file into notes', error);
+      pushToast({
+        title: 'Import Failed',
+        message: 'We could not read that file. Try again?',
+        variant: 'error',
+      });
     }
   }, [getItemById, readFile, onNoteChange]);
 

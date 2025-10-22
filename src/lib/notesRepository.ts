@@ -65,7 +65,6 @@ class NotesRepository {
       };
       this.notes[noteIndex] = updatedNote;
       this.saveNotes();
-      console.log('NotesRepository: Renamed note and saved:', updatedNote);
       return updatedNote;
     }
     return undefined;
@@ -81,7 +80,6 @@ class NotesRepository {
       };
       this.notes[noteIndex] = updatedNote;
       this.saveNotes();
-      console.log('NotesRepository: Toggled pin and saved:', updatedNote);
       return updatedNote;
     }
     return undefined;
@@ -97,7 +95,6 @@ class NotesRepository {
       };
       this.notes[noteIndex] = updatedNote;
       this.saveNotes();
-      console.log('NotesRepository: Toggled archive and saved:', updatedNote);
       return updatedNote;
     }
     return undefined;
@@ -107,7 +104,6 @@ class NotesRepository {
     const initialLength = this.notes.length;
     this.notes = this.notes.filter((note) => note.id !== id);
     this.saveNotes();
-    console.log('NotesRepository: Deleted note. Current notes:', this.notes);
     return this.notes.length < initialLength;
   }
 
@@ -129,7 +125,6 @@ class NotesRepository {
 
   reloadNotes(): void {
     this.notes = this.loadNotes();
-    console.log('NotesRepository: Reloaded notes from localStorage:', this.notes);
   }
 
   private generateTitleFromContent(content: string): string {

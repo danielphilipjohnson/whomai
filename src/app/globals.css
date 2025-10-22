@@ -66,6 +66,21 @@ body {
   animation: rotateSweep 2s linear infinite;
 }
 
+@keyframes toastSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.toast-slide-in {
+  animation: toastSlideIn 0.35s ease-out;
+}
+
 .glitch-effect {
   animation: glitch 0.5s infinite;
 }

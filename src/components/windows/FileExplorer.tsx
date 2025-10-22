@@ -1,4 +1,4 @@
-import FileExplorerApp from '@/app/apps/file-explorer/FileExplorerApp';
+import FileExplorerApp from '@/components/apps/file-explorer/FileExplorerApp';
 
 const FileExplorer = () => {
 	return <FileExplorerApp />;

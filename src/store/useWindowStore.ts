@@ -44,6 +44,7 @@ type Store = {
 	minimizeWindow: (id: WindowType) => void;
 	maximizeWindow: (id: WindowType) => void;
 	isAnyWindowMaximized: () => boolean;
+	updateWindowPayload: <T extends WindowType>(id: T, payload?: WindowPayloadMap[T]) => void;
 };
 
 export const useWindowStore = create<Store>((set, get) => ({
@@ -173,5 +174,16 @@ export const useWindowStore = create<Store>((set, get) => ({
 	isAnyWindowMaximized: () => {
 		const { windows } = get();
 		return Object.values(windows).some((w) => w.visible && w.maximized);
+	},
+	updateWindowPayload: (id, payload) => {
+		set((state) => ({
+			windows: {
+				...state.windows,
+				[id]: {
+					...state.windows[id],
+					payload,
+				},
+			},
+		}));
 	},
 }));

@@ -4,6 +4,7 @@ import "./globals.css";
 import { Topbar } from "@/components/layout/Topbar";
 import CyberpunkBackground from "@/components/layout/DesktopBackground";
 import Footer from "@/components/layout/Footer";
+import { CyberToastContainer } from "@/components/toast/CyberToastContainer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,6 +36,7 @@ export default function RootLayout({
           <Topbar />
           {children}
           <Footer />
+          <CyberToastContainer />
         </div>
       </body>
     </html>
