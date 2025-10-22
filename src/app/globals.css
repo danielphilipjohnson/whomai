@@ -1,15 +1,122 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
+@theme {
+ /* Neons */
+  --neon-aqua-low-opacity: rgba(0, 255, 170, 0.12);
+  --neon-blue:   #00f0ff;
+  --neon-green:  #39ff14;
+  --neon-purple: #bc13fe;
+  --neon-red:    #ff073a;
+
+  /* Specific component backgrounds */
+  --progress-background: #0a0820;
+  --toolbar-background:  #05040a;
+
+  /* Core dark backgrounds (solids) */
+  --bg-dark-1: #04020a; /* very dark, slight blue/purple */
+  --bg-dark-2: #070715; /* dark, slight blue */
+  --bg-dark-3: #0b0a16; /* dark, slight purple */
+  --bg-dark-4: #0c0c1a; /* dark, more saturated blue-ish */
+
+  /* Opacity variants (kept for convenience) */
+  --bg-dark-1-60: rgba(4, 2, 10, 0.6);
+  --bg-dark-1-80: rgba(4, 2, 10, 0.8);
+  --bg-dark-1-90: rgba(4, 2, 10, 0.9);
+
+  --bg-dark-2-60: rgba(7, 7, 21, 0.6);
+  --bg-dark-2-80: rgba(7, 7, 21, 0.8);
+  --bg-dark-2-90: rgba(7, 7, 21, 0.9);
+
+  --bg-dark-3-60: rgba(11, 10, 22, 0.6);
+  --bg-dark-3-80: rgba(11, 10, 22, 0.8);
+  --bg-dark-3-90: rgba(11, 10, 22, 0.9);
+
+  --bg-dark-4-60: rgba(12, 12, 26, 0.6);
+  --bg-dark-4-80: rgba(12, 12, 26, 0.8);
+  --bg-dark-4-90: rgba(12, 12, 26, 0.9);
+
+  /* Distinct shades */
+  --bg-dark-emerald:    #102020;
+  --bg-dark-emerald-60: rgba(16, 32, 32, 0.6);
+  --bg-dark-purple:     #0d0313;
+  --bg-dark-blue-grey:  #101026;
+  --bg-dark-blue-grey-80: rgba(16, 16, 38, 0.8);
+
+  /* Primary darks */
+  --dark-primary:   #05040d;
+  --dark-secondary: #0a0a0a;
+  --dark-tertiary:  #0d0221;
+
+  /* Primary darks (opacity) */
+  --dark-primary-80: rgba(5, 4, 13, 0.8);
+  --dark-primary-95: rgba(5, 4, 13, 0.95);
+  --dark-secondary-80: rgba(10, 10, 10, 0.8);
+  --dark-tertiary-70:  rgba(13, 2, 33, 0.7);
+
+  /* App structure */
+  --toolbar: #080712;
+  --sidebar: #070614;
+  --bg-sidebar-80: rgba(7, 6, 20, 0.8);
+  --active-item: #102020;
+}
+
 @theme inline {
+  /* existing */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  /* bridge your vars into Tailwind colour tokens */
+  --color-neon-aqua-low-opacity: var(--neon-aqua-low-opacity);
+  --color-neon-blue:   var(--neon-blue);
+  --color-neon-green:  var(--neon-green);
+  --color-neon-purple: var(--neon-purple);
+  --color-neon-red:    var(--neon-red);
+
+  --color-progress-background: var(--progress-background);
+  --color-toolbar-background:  var(--toolbar-background);
+
+  --color-bg-dark-1: var(--bg-dark-1);
+  --color-bg-dark-2: var(--bg-dark-2);
+  --color-bg-dark-3: var(--bg-dark-3);
+  --color-bg-dark-4: var(--bg-dark-4);
+
+  --color-bg-dark-1-60: var(--bg-dark-1-60);
+  --color-bg-dark-1-80: var(--bg-dark-1-80);
+  --color-bg-dark-1-90: var(--bg-dark-1-90);
+  --color-bg-dark-2-60: var(--bg-dark-2-60);
+  --color-bg-dark-2-80: var(--bg-dark-2-80);
+  --color-bg-dark-2-90: var(--bg-dark-2-90);
+  --color-bg-dark-3-60: var(--bg-dark-3-60);
+  --color-bg-dark-3-80: var(--bg-dark-3-80);
+  --color-bg-dark-3-90: var(--bg-dark-3-90);
+  --color-bg-dark-4-60: var(--bg-dark-4-60);
+  --color-bg-dark-4-80: var(--bg-dark-4-80);
+  --color-bg-dark-4-90: var(--bg-dark-4-90);
+
+  --color-bg-dark-emerald:      var(--bg-dark-emerald);
+  --color-bg-dark-emerald-60:   var(--bg-dark-emerald-60);
+  --color-bg-dark-purple:       var(--bg-dark-purple);
+  --color-bg-dark-blue-grey:    var(--bg-dark-blue-grey);
+  --color-bg-dark-blue-grey-80: var(--bg-dark-blue-grey-80);
+
+  --color-dark-primary:     var(--dark-primary);
+  --color-dark-secondary:   var(--dark-secondary);
+  --color-dark-tertiary:    var(--dark-tertiary);
+  --color-dark-primary-80:  var(--dark-primary-80);
+  --color-dark-primary-95:  var(--dark-primary-95);
+  --color-dark-secondary-80:var(--dark-secondary-80);
+  --color-dark-tertiary-70: var(--dark-tertiary-70);
+
+  --color-toolbar:     var(--toolbar);
+  --color-sidebar:     var(--sidebar);
+  --color-bg-sidebar-80: var(--bg-sidebar-80);
+  --color-active-item: var(--active-item);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -25,36 +132,52 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-
 @keyframes scanline {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .animate-blink {
   animation: blink 1s step-end infinite;
 }
 
-
 .folder-icon:hover {
   filter: drop-shadow(0 0 5px #33ffcc) drop-shadow(0 0 10px #33ffcc);
   transform: scale(1.05);
 }
 
-
 @keyframes pingSlow {
-  0% { transform: scale(1); opacity: 1; }
-  100% { transform: scale(2.5); opacity: 0; }
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
 }
 
 @keyframes rotateSweep {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .animate-ping-slow {
@@ -63,4 +186,129 @@ body {
 
 .animate-rotate-sweep {
   animation: rotateSweep 2s linear infinite;
+}
+
+@keyframes toastSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.toast-slide-in {
+  animation: toastSlideIn 0.35s ease-out;
+}
+
+.glitch-effect {
+  animation: glitch 0.5s infinite;
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+.boot-scanlines {
+  background-image: linear-gradient(rgba(0, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 60%);
+  background-size: 100% 4px;
+  animation: boot-scan 6s linear infinite;
+}
+
+@keyframes boot-scan {
+  0% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 0.32;
+  }
+  100% {
+    opacity: 0.2;
+  }
+}
+
+.boot-holo-mask {
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.4), transparent 55%);
+  mix-blend-mode: screen;
+  animation: boot-shimmer 2.6s ease-in-out infinite;
+}
+
+.boot-glitch::before,
+.boot-glitch::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  mix-blend-mode: screen;
+}
+
+.boot-glitch::before {
+  background: linear-gradient(90deg, rgba(34, 211, 238, 0.15), transparent 60%);
+  animation: boot-glitch 3.4s steps(6) infinite;
+}
+
+.boot-glitch::after {
+  background: linear-gradient(180deg, rgba(217, 70, 239, 0.2), transparent);
+  animation: boot-glitch 4.1s steps(5) infinite reverse;
+}
+
+@keyframes boot-shimmer {
+  0% {
+    transform: translateY(18%) skewY(2deg);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translateY(-18%) skewY(-2deg);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(18%) skewY(2deg);
+    opacity: 0.45;
+  }
+}
+
+@keyframes boot-glitch {
+  0% {
+    clip-path: inset(8% 0 65% 0);
+    opacity: 0.15;
+  }
+  50% {
+    clip-path: inset(18% 0 42% 0);
+    opacity: 0.05;
+  }
+  100% {
+    clip-path: inset(5% 0 78% 0);
+    opacity: 0.15;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-scanlines,
+  .boot-holo-mask,
+  .boot-glitch::before,
+  .boot-glitch::after {
+    animation-duration: 0.001ms;
+    animation-iteration-count: 1;
+  }
 }
