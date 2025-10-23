@@ -41,7 +41,7 @@ export const ThemeSwitcher = ({ onSelect }: ThemeSwitcherProps) => {
             >
               <div className="relative h-24 w-full sm:h-20">
                 <Image
-                  src={image}
+                  src={`${process.env.NEXT_PUBLIC_BASE_PATH}/${image}`}
                   alt={`${name} background`}
                   sizes="(min-width: 640px) 120px, 200px"
                   className="object-cover transition duration-200 group-hover:scale-105"
