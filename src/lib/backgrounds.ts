@@ -19,7 +19,7 @@ export const backgrounds: Record<ThemeKey, BackgroundVariant> = {
   neon: {
     id: 2,
     name: 'Neon Grid',
-    image: '//background-image/background-2.webp',
+    image: '/background-image/background-2.webp',
     gradient: 'from-cyan-900/60 to-purple-900/60',
     description: 'Synthwave grid glowing with electric cyan.',
   },

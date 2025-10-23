@@ -2,6 +2,7 @@
 
 import { backgroundOptions, ThemeKey } from '@/lib/backgrounds';
 import { useThemeStore } from '@/store/useThemeStore';
+import Image from 'next/image';
 
 interface ThemeSwitcherProps {
   onSelect?: () => void;
@@ -39,7 +40,7 @@ export const ThemeSwitcher = ({ onSelect }: ThemeSwitcherProps) => {
               }`}
             >
               <div className="relative h-24 w-full sm:h-20">
-                <img
+                <Image
                   src={image}
                   alt={`${name} background`}
                   sizes="(min-width: 640px) 120px, 200px"

@@ -4,7 +4,10 @@ const nextConfig: NextConfig = {
   /* config options here */
   output: "export",
   basePath: "/whomai",
-  assetPrefix: "/whomai/",
+  assetPrefix: "/whomai",
+  images:{
+    unoptimized: true
+  }
 };
 
 export default nextConfig;
