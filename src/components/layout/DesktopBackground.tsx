@@ -11,7 +11,7 @@ const DesktopBackground = () => {
       <div
         className="absolute inset-0 transition-opacity duration-500"
         style={{
-          backgroundImage: `url('${currentBackground.image}')`,
+          backgroundImage: `url('${process.env.NEXT_PUBLIC_BASE_PATH}${currentBackground.image}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}

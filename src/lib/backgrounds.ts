@@ -12,7 +12,7 @@ export const backgrounds: Record<ThemeKey, BackgroundVariant> = {
   dark: {
     id: 1,
     name: 'Cyberpunk City',
-    image: '/background-image/background-1.jpg',
+    image: '/whoami/background-image/background-1.jpg',
     gradient: 'from-purple-900/60 to-blue-900/60',
     description: 'Blade Runner skyline bathed in violet haze.',
   },
