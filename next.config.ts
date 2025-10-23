@@ -4,7 +4,6 @@ const nextConfig: NextConfig = {
   /* config options here */
   output: "export",
   basePath: "/whomai",
-  assetPrefix: "/whomai/",
 };
 
 export default nextConfig;
