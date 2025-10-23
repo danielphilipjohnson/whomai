@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { backgroundOptions, ThemeKey } from '@/lib/backgrounds';
 import { useThemeStore } from '@/store/useThemeStore';
 
@@ -40,13 +39,11 @@ export const ThemeSwitcher = ({ onSelect }: ThemeSwitcherProps) => {
               }`}
             >
               <div className="relative h-24 w-full sm:h-20">
-                <Image
+                <img
                   src={image}
                   alt={`${name} background`}
-                  fill
                   sizes="(min-width: 640px) 120px, 200px"
                   className="object-cover transition duration-200 group-hover:scale-105"
-                  priority={false}
                 />
                 <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-black/10 to-black/60" />
                 {selected && (
