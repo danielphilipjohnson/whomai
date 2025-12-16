@@ -9,7 +9,6 @@ import { useSession } from '@/hooks/useSession';
 export default function Home() {
   const { user, login } = useSession();
   const { booting, beginBoot, finishBoot } = useBootSequence();
-
   const handleLogin = (name: string) => {
     login({ name });
     beginBoot();

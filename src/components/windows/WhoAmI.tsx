@@ -10,7 +10,7 @@ export const WhoAmI = () => {
   const currentPath = useFileSystemStore((state) => state.currentPath);
   const promptPath = currentPath === '/' ? '~' : currentPath;
 
-  useTerminalBehavior(true, inputRef, terminalContentRef); // Always show terminal when rendered inside WindowFrame
+  useTerminalBehavior(true, inputRef, terminalContentRef);
 
   return (
     <div
