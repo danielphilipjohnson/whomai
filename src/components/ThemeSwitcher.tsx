@@ -44,7 +44,7 @@ export const ThemeSwitcher = ({ onSelect }: ThemeSwitcherProps) => {
                   src={`https://danielphilipjohnson.github.io/whomai${image}`}
                   alt={`${name} background`}
                   sizes="(min-width: 640px) 120px, 200px"
-                  className="object-cover transition duration-200 group-hover:scale-105"
+                  className="object-cover transition duration-200 group-hover:scale-105 h-20 w-full"
                 />
                 <div className="absolute inset-0 bg-gradient-to-br from-black/20 via-black/10 to-black/60" />
                 {selected && (
