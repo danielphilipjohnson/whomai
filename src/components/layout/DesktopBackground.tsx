@@ -1,5 +1,4 @@
 'use client';
-import React from 'react';
 import { useThemeStore } from '@/store/useThemeStore';
 import { backgrounds, ThemeKey } from '@/lib/backgrounds';
 
@@ -12,7 +11,7 @@ const DesktopBackground = () => {
       <div
         className="absolute inset-0 transition-opacity duration-500"
         style={{
-          backgroundImage: `url('${currentBackground.image}')`,
+          backgroundImage: `url('https://danielphilipjohnson.github.io/whomai${currentBackground.image}')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
